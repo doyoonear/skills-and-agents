@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations. 한글 트리거: "스킬 만들어줘", "skill 만들어줘", "새 스킬 생성", "스킬 생성해줘", "스킬 제작" 등의 요청이 있을 때 사용. 스킬을 ~/.claude/skills/ (전역) 또는 .claude/skills/ (프로젝트)에 생성.
 license: Complete terms in LICENSE.txt
 ---
 
