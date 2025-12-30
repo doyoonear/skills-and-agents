@@ -16,18 +16,43 @@ description: |
 
 ## 이 Skill이 생성하는 것
 
+### 코어
 - **OverlayProvider**: 모달 상태를 전역으로 관리하는 Context Provider
-- **overlay 객체**: `overlay.open()` Promise 기반 API
-- **애니메이션**: fade/slide 애니메이션 스타일
+- **useOverlay**: 모달을 열고 닫는 훅
 - **Backdrop**: 어두운 배경 + 클릭 시 닫기 옵션
-- **예시 컴포넌트**: 모달, 바텀시트 예시
 
-## 지원 컴포넌트 타입
+### 기본 컴포넌트
+- **Modal**: 중앙에 표시되는 다이얼로그 (Backdrop 포함)
+- **Sheet**: 하단에서 올라오는 시트 (Backdrop 포함, alignBottom)
 
-| 타입 | 설명 | 애니메이션 |
-|------|------|-----------|
-| 모달 | 중앙에 표시되는 다이얼로그 | fade + scale |
-| 바텀시트 | 하단에서 올라오는 시트 | slide (bottom → top) |
+### 확장 컴포넌트
+- **ConfirmModal**: Modal을 확장한 확인/취소 다이얼로그
+- **ActionSheet**: Sheet를 확장한 옵션 선택 시트
+
+## 폴더 구조
+
+```
+overlay/
+├── OverlayProvider.tsx   # Provider + Context + useOverlay
+├── Backdrop.tsx          # 배경 레이어
+├── Modal.tsx             # 기본 모달
+├── Sheet.tsx             # 기본 시트
+├── index.ts              # 모든 export
+├── modals/               # Modal 확장 컴포넌트들
+│   └── ConfirmModal.tsx
+└── sheets/               # Sheet 확장 컴포넌트들
+    └── ActionSheet.tsx
+```
+
+## 컴포넌트 계층 구조
+
+```
+OverlayProvider (Context)
+│
+├── Backdrop (기본 레이어)
+│   ├── Modal (기본 컴포넌트) ─── modals/ConfirmModal (확장)
+│   └── Sheet (기본 컴포넌트) ─── sheets/ActionSheet (확장)
+```
 
 ## 워크플로우
 
@@ -41,7 +66,6 @@ description: |
    ├── components/   # 컴포넌트 위치
    ├── hooks/        # 훅 위치
    ├── providers/    # Provider 위치 (있다면)
-   ├── styles/       # 스타일 위치 (있다면)
    └── App.tsx       # 메인 앱 파일
    ```
 
@@ -67,10 +91,10 @@ AskUserQuestion 도구를 사용하여 다음을 확인하세요:
   - 없으면: src/overlay/ 또는 src/lib/overlay/
 - 사용자가 다른 위치를 원하는지 확인
 
-질문 2: 생성할 예시 컴포넌트
-- 모달만
-- 바텀시트만
-- 둘 다 (기본)
+질문 2: 생성할 컴포넌트
+- 기본만 (Modal, Sheet)
+- 확장 포함 (Modal, Sheet, ConfirmModal, ActionSheet) - 기본값
+- 커스텀 선택
 
 질문 3: 백드롭 클릭 시 닫기 기본값
 - true (기본) - 배경 클릭 시 닫힘
@@ -82,12 +106,13 @@ AskUserQuestion 도구를 사용하여 다음을 확인하세요:
 templates/ 폴더의 템플릿을 참고하여 코드를 생성하세요.
 
 **생성할 파일 목록:**
-1. `overlay.tsx` - Provider + Context + overlay 객체
-2. `animations.ts` - 애니메이션 keyframes (스타일링 방식에 맞게)
-3. `Backdrop.tsx` - 백드롭 컴포넌트
-4. `index.ts` - export 파일
-5. `examples/Modal.tsx` - 모달 예시 (선택)
-6. `examples/BottomSheet.tsx` - 바텀시트 예시 (선택)
+1. `OverlayProvider.tsx` - Provider + Context + useOverlay 훅
+2. `Backdrop.tsx` - 백드롭 컴포넌트
+3. `Modal.tsx` - 기본 모달 컴포넌트
+4. `Sheet.tsx` - 기본 시트 컴포넌트
+5. `modals/ConfirmModal.tsx` - 확인 모달 (선택)
+6. `sheets/ActionSheet.tsx` - 액션 시트 (선택)
+7. `index.ts` - export 파일
 
 **스타일링 방식별 조정:**
 
@@ -103,7 +128,6 @@ templates/ 폴더의 템플릿을 참고하여 코드를 생성하세요.
 **1. App.tsx에 Provider 추가:**
 ```tsx
 import { OverlayProvider } from './providers/overlay';
-// 또는 import { OverlayProvider } from './overlay';
 
 function App() {
   return (
@@ -116,44 +140,54 @@ function App() {
 
 **2. 모달 사용 예시:**
 ```tsx
-import { overlay } from '@/providers/overlay';
-import { ConfirmModal } from '@/components/ConfirmModal';
+import { useOverlay, ConfirmModal } from '@/providers/overlay';
 
-async function handleDelete() {
-  const confirmed = await overlay.open(({ close }) => (
-    <ConfirmModal
-      title="삭제 확인"
-      message="정말 삭제하시겠습니까?"
-      onConfirm={() => close(true)}
-      onCancel={() => close(false)}
-    />
-  ));
+function MyComponent() {
+  const { open } = useOverlay();
 
-  if (confirmed) {
-    await deleteItem();
+  async function handleDelete() {
+    const confirmed = await open(({ close }) => (
+      <ConfirmModal
+        close={close}
+        title="삭제 확인"
+        message="정말 삭제하시겠습니까?"
+      />
+    ));
+
+    if (confirmed) {
+      await deleteItem();
+    }
   }
+
+  return <button onClick={handleDelete}>삭제</button>;
 }
 ```
 
-**3. 바텀시트 사용 예시:**
+**3. 시트 사용 예시:**
 ```tsx
-import { overlay } from '@/providers/overlay';
-import { ActionSheet } from '@/components/ActionSheet';
+import { useOverlay, ActionSheet } from '@/providers/overlay';
 
-async function handleOptions() {
-  const action = await overlay.open(({ close }) => (
-    <ActionSheet
-      options={[
-        { label: '수정', value: 'edit' },
-        { label: '삭제', value: 'delete' },
-        { label: '취소', value: null },
-      ]}
-      onSelect={(value) => close(value)}
-    />
-  ));
+function MyComponent() {
+  const { open } = useOverlay();
 
-  if (action === 'edit') { /* ... */ }
-  if (action === 'delete') { /* ... */ }
+  async function handleOptions() {
+    const action = await open(({ close }) => (
+      <ActionSheet
+        close={close}
+        title="옵션 선택"
+        options={[
+          { label: '수정', value: 'edit' },
+          { label: '삭제', value: 'delete', destructive: true },
+          { label: '취소', value: null },
+        ]}
+      />
+    ));
+
+    if (action === 'edit') { /* ... */ }
+    if (action === 'delete') { /* ... */ }
+  }
+
+  return <button onClick={handleOptions}>옵션</button>;
 }
 ```
 
@@ -161,14 +195,17 @@ async function handleOptions() {
 
 코드 생성 시 다음 템플릿을 참고하세요:
 
-- `templates/overlay-context.tsx.md` - 메인 Provider 코드
+- `templates/overlay-provider.tsx.md` - Provider + useOverlay 코드
 - `templates/overlay-animations.tsx.md` - 애니메이션 스타일
 - `templates/backdrop.tsx.md` - 백드롭 컴포넌트
-- `templates/example-modal.tsx.md` - 모달 예시
-- `templates/example-bottomsheet.tsx.md` - 바텀시트 예시
+- `templates/modal.tsx.md` - 기본 Modal 컴포넌트
+- `templates/sheet.tsx.md` - 기본 Sheet 컴포넌트
+- `templates/confirm-modal.tsx.md` - ConfirmModal 확장 컴포넌트
+- `templates/action-sheet.tsx.md` - ActionSheet 확장 컴포넌트
 
 ## 주의사항
 
 1. **React 버전 확인**: React 18+ 권장 (createPortal 사용)
 2. **ESLint 실행**: 생성 후 프로젝트의 ESLint 설정에 맞게 포맷팅
 3. **경로 alias**: 프로젝트의 경로 alias 설정 확인 (`@/`, `~/` 등)
+4. **네이밍 컨벤션**: 컴포넌트 파일은 반드시 파스칼 케이스로 작성
