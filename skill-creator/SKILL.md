@@ -1,12 +1,87 @@
 ---
 name: skill-creator
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations. 한글 트리거: "스킬 만들어줘", "skill 만들어줘", "새 스킬 생성", "스킬 생성해줘", "스킬 제작" 등의 요청이 있을 때 사용. 스킬을 ~/.claude/skills/ (전역) 또는 .claude/skills/ (프로젝트)에 생성.
+description: |
+  Guide for creating effective skills.
+  This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+  한글 트리거: "스킬 만들어줘", "skill 만들어줘", "새 스킬 생성", "스킬 생성해줘", "스킬 제작" 등의 요청이 있을 때 사용.
+  스킬을 ~/.claude/skills/ (전역) 또는 .claude/skills/ (프로젝트)에 생성.
 license: Complete terms in LICENSE.txt
 ---
 
 # Skill Creator
 
-This skill provides guidance for creating effective skills.
+This skill provides guidance for creating effective Claude Code extensions.
+
+## Step 0: Choose Slash Command or Skill?
+
+**Before creating anything, determine the appropriate type.** Slash Commands and Skills serve different purposes.
+
+### Comparison Table
+
+| 구분 | Slash Commands | Skills |
+|------|----------------|--------|
+| **파일 위치** | `.claude/commands/` 또는 `~/.claude/commands/` | `.claude/skills/name/` 또는 `~/.claude/skills/name/` |
+| **파일 구조** | 단일 `.md` 파일 | 디렉토리 + `SKILL.md` + 추가 파일 |
+| **호출 방식** | `/command` 명시적 입력 | Claude가 **자동으로** 발견 및 실행 |
+| **Frontmatter** | **선택** (기능 추가 시 필요) | **필수** (`name`, `description`) |
+| **복잡도** | 간단한 프롬프트 | 복잡한 다단계 워크플로우 |
+| **추가 파일** | 불가능 (단일 파일만) | scripts/, references/, assets/ 가능 |
+
+### Decision Flow
+
+```
+사용자 요청 접수
+    ↓
+Q1: 사용자가 명시적으로 "/명령어"로 호출하길 원하는가?
+    → Yes → Slash Command
+    → No ↓
+
+Q2: Claude가 대화 내용 기반으로 자동 트리거해야 하는가?
+    → Yes → Skill
+    → No ↓
+
+Q3: 여러 파일(스크립트, 참조문서, 템플릿)이 필요한가?
+    → Yes → Skill
+    → No ↓
+
+Q4: 반복되는 간단한 프롬프트인가?
+    → Yes → Slash Command
+    → No → Skill (복잡한 워크플로우)
+```
+
+### Slash Command 적합 사례
+
+- 자주 사용하는 간단한 프롬프트 (`/review`, `/explain`, `/optimize`)
+- 단일 파일로 충분한 경우
+- 사용자가 **명시적으로** 실행 시점을 제어하고 싶은 경우
+- `$ARGUMENTS`로 사용자 입력만 받으면 되는 경우
+
+**Slash Command 생성 예시:**
+
+```markdown
+<!-- ~/.claude/commands/review.md -->
+이 코드를 리뷰해주세요.
+$ARGUMENTS
+```
+
+```markdown
+<!-- allowed-tools 사용 시 -->
+---
+allowed-tools: Read, Grep, Glob
+---
+이 코드를 리뷰해주세요.
+```
+
+### Skill 적합 사례
+
+- Claude가 **자동으로** 발견해야 할 복잡한 기능
+- 여러 파일과 스크립트가 필요한 경우
+- 팀 전체가 표준화된 워크플로우를 필요로 할 때
+- 도메인 지식, 스키마, 비즈니스 로직이 포함된 경우
+
+**⚠️ Skill로 결정된 경우, 반드시 아래 가이드를 따라 SKILL.md에 frontmatter를 작성해야 합니다.**
+
+---
 
 ## About Skills
 
@@ -51,9 +126,9 @@ Every skill consists of a required SKILL.md file and optional bundled resources:
 ```
 skill-name/
 ├── SKILL.md (required)
-│   ├── YAML frontmatter metadata (required)
-│   │   ├── name: (required)
-│   │   └── description: (required)
+│   ├── YAML frontmatter metadata (⚠️ REQUIRED)
+│   │   ├── name: (required) - 스킬 식별자
+│   │   └── description: (required) - 트리거 판단 기준
 │   └── Markdown instructions (required)
 └── Bundled Resources (optional)
     ├── scripts/          - Executable code (Python/Bash/etc.)
@@ -65,8 +140,10 @@ skill-name/
 
 Every SKILL.md consists of:
 
-- **Frontmatter** (YAML): Contains `name` and `description` fields. These are the only fields that Claude reads to determine when the skill gets used, thus it is very important to be clear and comprehensive in describing what the skill is, and when it should be used.
-- **Body** (Markdown): Instructions and guidance for using the skill. Only loaded AFTER the skill triggers (if at all).
+- **Frontmatter** (YAML, ⚠️ **필수**): `name`과 `description` 필드 포함. **Claude는 오직 이 두 필드만 보고 스킬 사용 여부를 결정함.** Body 내용은 트리거 판단에 사용되지 않음.
+- **Body** (Markdown): 스킬 사용 가이드. 트리거 **후에만** 로드됨.
+
+**⚠️ Frontmatter가 없으면 Skill이 인식되지 않습니다. Slash Command와 달리 Skill에서는 필수입니다.**
 
 #### Bundled Resources (optional)
 
@@ -236,6 +313,8 @@ To turn concrete examples into an effective skill, analyze each example by:
 1. Considering how to execute on the example from scratch
 2. Identifying what scripts, references, and assets would be helpful when executing these workflows repeatedly
 
+**Parallel Analysis**: When analyzing a large codebase or multiple directories for patterns, use parallel Explore sub-agents to speed up analysis. See references/workflows.md for details.
+
 Example: When building a `pdf-editor` skill to handle queries like "Help me rotate this PDF," the analysis shows:
 
 1. Rotating a PDF requires re-writing the same code each time
@@ -276,6 +355,33 @@ The script:
 
 After initialization, customize or remove the generated SKILL.md and example files as needed.
 
+#### Register Skill Permission in Global Settings
+
+After creating a new skill, register it in the global settings.json to allow automatic execution without permission prompts.
+
+Add the following to `~/.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Skill(/your-skill-name:*)"
+    ]
+  }
+}
+```
+
+Example for a skill named `pdf-editor`:
+
+```json
+"Skill(/pdf-editor:*)"
+```
+
+**Permission Format Rules:**
+- Skill: `Skill(/skill-name:*)` - slash(`/`) required, `:*` for arguments
+- Bash: `Bash(command *)` - space + `*` wildcard (NOT `Bash(command:*)`)
+- `Skill(*)` and `Bash(*)` global wildcards are NOT supported
+
 ### Step 4: Edit the Skill
 
 When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of Claude to use. Include information that would be beneficial and non-obvious to Claude. Consider what procedural knowledge, domain-specific details, or reusable assets would help another Claude instance execute these tasks more effectively.
@@ -284,7 +390,7 @@ When editing the (newly-generated or existing) skill, remember that the skill is
 
 Consult these helpful guides based on your skill's needs:
 
-- **Multi-step processes**: See references/workflows.md for sequential workflows and conditional logic
+- **Multi-step processes**: See references/workflows.md for sequential workflows, conditional logic, and **parallel workflows with sub-agents**
 - **Specific output formats or quality standards**: See references/output-patterns.md for template and example patterns
 
 These files contain established best practices for effective skill design.
@@ -292,6 +398,8 @@ These files contain established best practices for effective skill design.
 #### Start with Reusable Skill Contents
 
 To begin implementation, start with the reusable resources identified above: `scripts/`, `references/`, and `assets/` files. Note that this step may require user input. For example, when implementing a `brand-guidelines` skill, the user may need to provide brand assets or templates to store in `assets/`, or documentation to store in `references/`.
+
+**Parallel Resource Creation**: When creating multiple independent resources (e.g., multiple scripts or reference files), use parallel General-purpose sub-agents to create them simultaneously. See references/workflows.md for details.
 
 Added scripts must be tested by actually running them to ensure there are no bugs and that the output matches what is expected. If there are many similar scripts, only a representative sample needs to be tested to ensure confidence that they all work while balancing time to completion.
 
@@ -301,17 +409,48 @@ Any example files and directories not needed for the skill should be deleted. Th
 
 **Writing Guidelines:** Always use imperative/infinitive form.
 
-##### Frontmatter
+##### Frontmatter (필수)
 
-Write the YAML frontmatter with `name` and `description`:
+**⚠️ SKILL.md에는 반드시 YAML frontmatter가 있어야 합니다. frontmatter가 없으면 Skill이 작동하지 않습니다.**
 
-- `name`: The skill name
-- `description`: This is the primary triggering mechanism for your skill, and helps Claude understand when to use the skill.
-  - Include both what the Skill does and specific triggers/contexts for when to use it.
-  - Include all "when to use" information here - Not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to Claude.
-  - Example description for a `docx` skill: "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. Use when Claude needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks"
+```yaml
+---
+name: skill-name                    # 필수: 소문자, 숫자, 하이픈만 (최대 64자)
+description: "무엇을 하고 언제 사용하는가"  # 필수: 최대 1024자
+---
+```
 
-Do not include any other fields in YAML frontmatter.
+**필수 필드:**
+
+- `name`: 스킬 이름 (소문자, 숫자, 하이픈만 허용)
+- `description`: **Claude가 이 스킬을 언제 사용할지 판단하는 유일한 기준**
+  - Body 내용은 트리거 **후에만** 로드됨
+  - "When to Use This Skill" 섹션을 body에 넣어도 트리거 판단에 도움이 안 됨
+  - 모든 트리거 조건과 키워드를 description에 포함해야 함
+  - 예시: `"PDF 문서 편집, 회전, 병합, 분할 기능. 사용자가 'PDF 편집', 'PDF 회전', 'PDF 합치기' 등을 요청할 때 사용."`
+
+**선택 필드:**
+
+| 필드 | 설명 |
+|------|------|
+| `allowed-tools` | Skill 활성화 시 사용 가능한 도구 제한 |
+| `model` | 특정 모델 지정 |
+| `context: fork` | 독립된 sub-agent 컨텍스트에서 실행 |
+| `user-invocable` | 슬래시 메뉴 표시 여부 (기본값: true) |
+
+**⚠️ 위 필드 외에 다른 필드는 frontmatter에 넣지 마세요.**
+
+**올바른 예시:**
+
+```yaml
+---
+name: pdf-editor
+description: |
+  PDF 문서 편집, 회전, 병합, 분할, 텍스트 추출 기능.
+  다음 요청 시 사용: "PDF 편집해줘", "PDF 회전", "PDF 합치기", "PDF 나누기", "PDF에서 텍스트 추출"
+  한글 트리거: "PDF 편집", "피디에프 수정", "문서 회전" 등
+---
+```
 
 ##### Body
 

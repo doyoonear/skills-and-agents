@@ -274,6 +274,97 @@ const status = (() => {
 })();
 ```
 
+### 2.4 코드 스페이싱 (줄 바꿈)
+
+변수/함수 선언을 용도별로 그룹화하기 위한 빈 줄은 가독성에 도움이 됩니다.
+단, 다음 상황에서는 빈 줄이 오히려 코드를 읽기 어렵게 만들므로 자제합니다.
+
+#### 권장: 용도별 그룹화
+
+```tsx
+// ✅ 좋은 예: 훅 호출, 파생 상태, 변환값으로 그룹화
+const departureStation = useDepartureStation();
+const arrivalStation = useArrivalStation();
+const tripType = useTripType();
+const selectionPhase = useSelectionPhase();
+const { getStationId } = useStationIdMap();
+
+const isReturnPhase = selectionPhase === SELECTION_PHASE.RETURN;
+
+const currentDepartureStation = isReturnPhase ? arrivalStation : departureStation;
+const currentArrivalStation = isReturnPhase ? departureStation : arrivalStation;
+
+const departureStationId = getStationId(currentDepartureStation);
+const arrivalStationId = getStationId(currentArrivalStation);
+```
+
+#### 비권장: 객체 프로퍼티 사이
+
+```tsx
+// ❌ 나쁜 예: 객체 내부 프로퍼티 사이 불필요한 빈 줄
+export const useSearchStore = create<SearchState>(set => ({
+  ...initialState,
+
+  actions: {
+    selectDepartureStation: station => set({ departureStation: station }),
+
+    selectArrivalStation: station => set({ arrivalStation: station }),
+
+    selectTripType: tripType => set({ tripType }),
+  },
+}));
+
+// ✅ 좋은 예: 객체 프로퍼티는 연속으로
+export const useSearchStore = create<SearchState>(set => ({
+  ...initialState,
+  actions: {
+    selectDepartureStation: station => set({ departureStation: station }),
+    selectArrivalStation: station => set({ arrivalStation: station }),
+    selectTripType: tripType => set({ tripType }),
+  },
+}));
+```
+
+#### 비권장: JSX 요소 사이
+
+```tsx
+// ❌ 나쁜 예: JSX 요소 사이 불필요한 빈 줄
+return (
+  <>
+    <NavigationBar title="기차 예매" />
+
+    <Spacing size={16} />
+
+    <ListRow onClick={() => navigate('/station')} contents={...} />
+
+    <Flex justifyContent="center">
+      <Assets.Icon name="icon-arrow-down" />
+    </Flex>
+  </>
+);
+
+// ✅ 좋은 예: JSX 요소는 연속으로
+return (
+  <>
+    <NavigationBar title="기차 예매" />
+    <Spacing size={16} />
+    <ListRow onClick={() => navigate('/station')} contents={...} />
+    <Flex justifyContent="center">
+      <Assets.Icon name="icon-arrow-down" />
+    </Flex>
+  </>
+);
+```
+
+#### 스페이싱 판단 기준
+
+| 상황 | 빈 줄 사용 |
+|-----|----------|
+| 훅 호출 그룹 → 파생 상태 그룹 → 핸들러 그룹 | ✅ 권장 |
+| 객체 리터럴 내부 프로퍼티 사이 | ❌ 비권장 |
+| JSX return문 내부 요소 사이 | ❌ 비권장 |
+| 서로 다른 관심사의 코드 블록 사이 | ✅ 권장 |
+
 ---
 
 ## 3. 예측가능성 (Predictability)

@@ -45,6 +45,33 @@ React 컴포넌트의 코드를 분석하고, 개선 가능한 패턴을 찾아 
 | 10 | 컴포넌트 분리 | 큰 컴포넌트에서 독립적인 UI 단위를 별도 컴포넌트로 분리 | 중간 |
 | 11 | 불필요한 래퍼 함수 제거 | 단순히 다른 함수를 호출하기만 하는 래퍼 함수 제거 | 낮음 |
 | 12 | 타입 개선 | 암묵적 any 제거, 더 정확한 타입 사용 | 낮음 |
+| 13 | 불필요한 코멘트 제거 | 코드로 이미 명확한 내용을 설명하는 코멘트 제거 | 낮음 |
+| 14 | 코드 스페이싱 정리 | 객체 내부나 JSX에서 불필요한 빈 줄 제거 | 낮음 |
+
+#### 병렬 분석 전략 (Sub-agent 활용)
+
+분석 대상 규모에 따라 분석 방식을 선택하세요:
+
+**단일/소수 파일 (1~3개):**
+- 직접 순차 분석 수행
+- Sub-agent 오버헤드가 더 클 수 있음
+
+**다수 파일 (4개 이상) 또는 프로젝트 전체:**
+- Task tool로 Explore sub-agent를 병렬 호출하여 분석 시간 단축
+- 각 agent가 독립적인 컨텍스트에서 작업하므로 메인 컨텍스트 보존
+
+**병렬 분석 예시:**
+```
+# 3개의 Explore agent를 동시에 호출
+Task 1 (Explore): "src/pages/ 디렉토리의 모든 컴포넌트에서 리팩토링 패턴 체크리스트 분석"
+Task 2 (Explore): "src/components/ 디렉토리의 모든 컴포넌트에서 리팩토링 패턴 체크리스트 분석"
+Task 3 (Explore): "src/hooks/ 디렉토리의 모든 훅에서 리팩토링 패턴 체크리스트 분석"
+```
+
+**주의사항:**
+- Explore agent는 읽기 전용 (Haiku 모델, 빠르고 저렴)
+- 각 agent에게 체크리스트 패턴을 명시적으로 전달
+- 결과를 통합하여 사용자에게 보고
 
 ### 3단계: 개선점 보고
 
@@ -542,6 +569,178 @@ function handleChange(value: string) {
   setValue(value);
 }
 ```
+
+---
+
+### 12. 불필요한 코멘트 제거
+
+코드 자체로 의도가 명확한 경우 코멘트는 오히려 노이즈가 됩니다.
+
+#### 제거 대상 코멘트
+
+**1. 함수명/변수명으로 이미 충분한 경우:**
+```tsx
+// Before
+// 역 선택 핸들러
+const handleStationSelect = (station: Station) => { ... };
+
+// 뒤로가기 핸들러
+const handleBack = () => { ... };
+
+// After
+const handleStationSelect = (station: Station) => { ... };
+const handleBack = () => { ... };
+```
+
+**2. 코드 구조로 명확한 경우:**
+```tsx
+// Before
+interface SearchState {
+  // State
+  departureStation: string | null;
+  arrivalStation: string | null;
+
+  // Actions Namespace
+  actions: { ... };
+}
+
+// After
+interface SearchState {
+  departureStation: string | null;
+  arrivalStation: string | null;
+
+  actions: { ... };
+}
+```
+
+**3. 섹션 레이블:**
+```tsx
+// Before
+// Types
+export const TRIP_TYPE = { ... };
+
+// Type Guard
+export function isTripType(value: string): value is TripType { ... }
+
+// 직접 export된 Actions (hook 없이 사용 가능)
+export const searchActions = { ... };
+
+// After
+export const TRIP_TYPE = { ... };
+
+export function isTripType(value: string): value is TripType { ... }
+
+export const searchActions = { ... };
+```
+
+**4. 제거된 코드에 대한 설명:**
+```tsx
+// Before
+// Note: useSearchActions는 제거됨.
+// 액션 사용은 stores에서 직접 export된 searchActions를 사용하세요.
+
+// After
+// (코멘트 자체를 삭제)
+```
+
+#### 유지해야 할 코멘트
+
+**1. 타입 힌트:**
+```tsx
+const stationType = searchParams.get('type'); // 'departure' | 'arrival'
+```
+
+**2. 긴 JSX 섹션 구분 (선택적):**
+```tsx
+{/* 출발역 선택 */}
+<ListRow ... />
+
+{/* 가는 날 선택 */}
+<ListRow ... />
+```
+
+**3. 비즈니스 로직의 "왜":**
+```tsx
+// 편도로 전환 시 오는 날 초기화 (사용자가 왕복 → 편도로 변경하면 오는 날 선택이 의미 없음)
+returnDate: tripType === TRIP_TYPE.ONE_WAY ? null : state.returnDate,
+```
+
+**4. TODO, FIXME:**
+```tsx
+// TODO: API 응답 형식 변경 후 수정 필요
+// FIXME: 엣지 케이스 처리 필요
+```
+
+#### 코멘트 필요성 판단 기준
+
+| 질문 | Yes → 유지 | No → 제거 |
+|-----|-----------|----------|
+| 코드만 읽고 의도를 파악하기 어려운가? | ✅ | ❌ |
+| 비즈니스 규칙이나 "왜"를 설명하는가? | ✅ | ❌ |
+| 외부 시스템/API와의 관계를 설명하는가? | ✅ | ❌ |
+| 함수명/변수명이 이미 동일한 내용을 전달하는가? | ❌ | ✅ |
+| 코드 구조로 이미 명확한가? | ❌ | ✅ |
+
+---
+
+### 14. 코드 스페이싱 정리
+
+JS 코드에서 불필요한 줄 바꿈을 정리합니다.
+
+**허용되는 빈 줄**: 용도별 그룹화 (훅 → 파생 상태 → 핸들러)
+
+**제거해야 할 빈 줄**:
+- 객체 리터럴 내부 프로퍼티 사이
+- JSX return문 내부 요소 사이
+
+**Before:**
+```tsx
+export const useStore = create(set => ({
+  ...initialState,
+
+  actions: {
+    doSomething: () => set({ ... }),
+
+    doAnotherThing: () => set({ ... }),
+  },
+}));
+
+// JSX도 마찬가지
+return (
+  <>
+    <Header />
+
+    <Content />
+
+    <Footer />
+  </>
+);
+```
+
+**After:**
+```tsx
+export const useStore = create(set => ({
+  ...initialState,
+  actions: {
+    doSomething: () => set({ ... }),
+    doAnotherThing: () => set({ ... }),
+  },
+}));
+
+// JSX도 연속으로
+return (
+  <>
+    <Header />
+    <Content />
+    <Footer />
+  </>
+);
+```
+
+**장점:**
+- 불필요한 시각적 노이즈 제거
+- 객체/JSX는 이미 구조적으로 구분되어 있음
+- 코드가 더 compact하고 읽기 쉬워짐
 
 ---
 
