@@ -1,5 +1,5 @@
 ---
-name: cleanup-unused-code
+name: refactor-clean
 description: |
   프로젝트에서 사용되지 않는 코드를 찾아 정리합니다.
   다음과 같은 요청 시 이 skill을 사용하세요:

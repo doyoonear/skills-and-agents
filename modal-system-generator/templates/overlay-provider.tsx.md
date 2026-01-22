@@ -5,6 +5,8 @@ Provider + Context + useOverlay 훅을 구현하는 파일입니다.
 > **Note**: 전역 `overlay` 객체는 제거되었습니다. 모든 모달 호출은 `useOverlay` 훅을 통해 이루어집니다.
 > 이를 통해 코드 추적이 용이해지고, 명시적인 의존성을 가지며, 테스트가 쉬워집니다.
 
+> **⚠️ 중요**: `resolvers`는 반드시 `useRef`로 관리해야 합니다. `useState`를 사용하면 빈번한 리렌더링 시 Stale Closure 버그가 발생합니다. 자세한 내용은 SKILL.md의 "Stale Closure 버그 방지" 섹션을 참고하세요.
+
 ## Tailwind 버전
 
 ```tsx
@@ -15,6 +17,7 @@ import {
     useContext,
     useState,
     useCallback,
+    useRef,
     ReactNode,
 } from 'react'
 import { createPortal } from 'react-dom'
@@ -46,9 +49,8 @@ interface OverlayProviderProps {
 
 export function OverlayProvider({ children }: OverlayProviderProps) {
     const [overlays, setOverlays] = useState<OverlayElement[]>([])
-    const [resolvers, setResolvers] = useState<
-        Map<string, (value: unknown) => void>
-    >(new Map())
+    // ⚠️ useRef 사용 필수! useState 사용 시 Stale Closure 버그 발생
+    const resolversRef = useRef<Map<string, (value: unknown) => void>>(new Map())
     const [isMounted, setIsMounted] = useState(false)
 
     // 클라이언트 마운트 확인
@@ -60,27 +62,21 @@ export function OverlayProvider({ children }: OverlayProviderProps) {
         return Math.random().toString(36).slice(2) + Date.now().toString(36)
     }, [])
 
-    const close = useCallback(
-        (id: string, result?: unknown) => {
-            const resolver = resolvers.get(id)
-            if (resolver) {
-                resolver(result)
-                setResolvers((prev) => {
-                    const next = new Map(prev)
-                    next.delete(id)
-                    return next
-                })
-            }
-            setOverlays((prev) => prev.filter((overlay) => overlay.id !== id))
-        },
-        [resolvers]
-    )
+    // ⚠️ 의존성 배열이 비어있어야 함 (useRef 사용으로 항상 최신 참조 보장)
+    const close = useCallback((id: string, result?: unknown) => {
+        const resolver = resolversRef.current.get(id)
+        if (resolver) {
+            resolver(result)
+            resolversRef.current.delete(id)
+        }
+        setOverlays((prev) => prev.filter((overlay) => overlay.id !== id))
+    }, [])
 
     const closeAll = useCallback(() => {
-        resolvers.forEach((resolver) => resolver(undefined))
-        setResolvers(new Map())
+        resolversRef.current.forEach((resolver) => resolver(undefined))
+        resolversRef.current.clear()
         setOverlays([])
-    }, [resolvers])
+    }, [])
 
     const open = useCallback(
         <T,>(
@@ -96,13 +92,8 @@ export function OverlayProvider({ children }: OverlayProviderProps) {
                     close(id, result)
                 }
 
-                setResolvers(
-                    (prev) =>
-                        new Map(prev).set(
-                            id,
-                            resolve as (value: unknown) => void
-                        )
-                )
+                // useRef로 직접 set (setState 불필요)
+                resolversRef.current.set(id, resolve as (value: unknown) => void)
                 setOverlays((prev) => [
                     ...prev,
                     {

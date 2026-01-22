@@ -76,9 +76,13 @@ Ralph Loop는 **Stop Hook 기반 자기 참조 루프**:
 ## Requirements
 [사용자 요구사항 - 명확하고 구체적으로]
 
-## Implementation Plan
+## Implementation Plan (with Commit Points)
 1. [구체적 단계]
+   - **Commit**: `[type]: [커밋 메시지]`
+   - **Compaction**: 커밋 후 /compact 실행
 2. [구체적 단계]
+   - **Commit**: `[type]: [커밋 메시지]`
+   - **Compaction**: 커밋 후 /compact 실행
 ...
 
 ## Success Criteria (자동 검증 가능해야 함)
@@ -245,6 +249,102 @@ started_at: "2025-01-12T10:00:00"
 [2025-01-12 10:30:00] COMPLETED: Found completion promise 'FEATURE_DONE' at iteration 15
 ```
 
+## 슬립 방지 (macOS)
+
+Ralph Loop는 장시간 무인 실행을 위해 설계되었으므로, macOS 슬립 모드를 방지해야 합니다.
+
+### 슬립 모드 진입 시 발생하는 문제
+
+1. **프로세스 일시 중지** → Claude Code CLI 멈춤
+2. **네트워크 끊김** → API 호출 불가
+3. **세션 끊김** → 깨어났을 때 Stop Hook 작동 불가
+
+### 해결 방법: caffeinate
+
+| 방법 | 명령어/설정 | 특징 |
+|------|-------------|------|
+| **caffeinate** | `caffeinate -dims` | 터미널이 열려있는 동안 슬립 방지 |
+| 시스템 설정 | 에너지 → 슬립 비활성화 | 전원 연결 시에만 권장 |
+| 클라우드 VM | EC2, GCP, Azure 등 | 로컬 상태와 무관하게 24시간 실행 |
+
+### caffeinate 옵션
+
+| 옵션 | 의미 |
+|------|------|
+| `-d` | 디스플레이 슬립 방지 |
+| `-i` | 시스템 유휴 슬립 방지 |
+| `-m` | 디스크 슬립 방지 |
+| `-s` | 시스템 슬립 방지 (전원 연결 시) |
+
+### 사용 방법
+
+```bash
+# Ralph 작업 전에 백그라운드로 실행
+caffeinate -dims &
+
+# 또는 Claude와 함께 실행 (Claude 종료 시 caffeinate도 종료)
+caffeinate -dims -- claude
+
+# 작업 완료 후 해제
+pkill caffeinate
+```
+
+### setup-ralph.sh에 통합
+
+setup-ralph.sh 실행 시 자동으로 caffeinate를 시작하도록 설정할 수 있습니다:
+
+```bash
+# setup-ralph.sh 내부에서
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  caffeinate -dims &
+  echo "caffeinate started (PID: $!)"
+fi
+```
+
+## 필수 원칙 (반드시 준수)
+
+> ⚠️ 아래 원칙은 Ralph Loop의 안정성과 추적 가능성을 위해 **반드시** 준수해야 합니다.
+
+### 원칙 1: Phase별 커밋 계획 수립
+
+Implementation Plan 작성 시 **각 단계별 커밋 시점을 미리 명시**합니다.
+
+- 하나의 논리적 단위 = 하나의 커밋
+- 커밋 메시지 템플릿을 계획 단계에서 작성
+- Phase 완료 전 반드시 커밋하여 진행 상황 보존
+
+### 원칙 2: 커밋 후 Compaction 실행
+
+모든 커밋 직후 `/compact` 명령을 실행합니다.
+
+- 컨텍스트 초기화로 장시간 세션 안정성 확보
+- 긴 세션에서도 일관된 동작 보장
+- Stop Hook 재시작 시 깔끔한 상태 유지
+
+### 워크플로우 다이어그램
+
+```
+┌─────────────┐    ┌──────────┐    ┌────────┐    ┌───────────┐
+│ Phase 구현  │ → │  테스트   │ → │  커밋  │ → │ /compact  │
+└─────────────┘    └──────────┘    └────────┘    └───────────┘
+       ↑                                              │
+       └──────────────── 다음 Phase ←─────────────────┘
+```
+
+### 예시 워크플로우
+
+```
+1. 프리셋 타입 정의 구현
+2. 테스트/검증
+3. git commit -m "feat: 프리셋 타입 및 데이터 정의"
+4. /compact  ← 필수!
+5. Store 수정 구현
+6. 테스트/검증
+7. git commit -m "feat: trainingStore에 프리셋 선택 상태 추가"
+8. /compact  ← 필수!
+9. ... 반복
+```
+
 ## 주의사항
 
 1. **자동 검증 가능한 완료 조건** 필수 (테스트, lint, type check)
@@ -252,6 +352,8 @@ started_at: "2025-01-12T10:00:00"
 3. **모호한 요구사항**은 Ralph에 부적합 → 먼저 명확화 필요
 4. **아키텍처 결정**이 필요한 작업은 사전에 결정 후 실행
 5. **다중 세션 사용 시** 각 터미널에서 독립적으로 작동 (세션 격리)
+6. **macOS에서 장시간 실행 시** caffeinate로 슬립 방지 필수
+7. **필수 원칙 준수** - 위 "필수 원칙" 섹션의 커밋/compaction 규칙 필수 이행
 
 ## 스크립트 위치
 
