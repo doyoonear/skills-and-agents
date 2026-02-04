@@ -4,3 +4,6 @@
 # Backup folder (local only)
 backup/
 __pycache__/
+
+# Custom skills (separate git repository)
+custom/
