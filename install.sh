@@ -1,23 +1,26 @@
 #!/bin/bash
 
 # Skills and Agents Sync Script
-# 커스텀 스킬과 에이전트를 ~/.claude/로 symlink 합니다.
-# 외부 설치 스킬(.agents/skills/)은 보존됩니다.
+# custom과 external의 스킬/에이전트를 ~/.claude/와 ~/.agents/에 symlink합니다.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS_SRC="$SCRIPT_DIR/skills"
-AGENTS_SRC="$SCRIPT_DIR/agents"
+CUSTOM_SKILLS="$SCRIPT_DIR/custom/skills"
+CUSTOM_AGENTS="$SCRIPT_DIR/custom/agents"
+EXTERNAL_SKILLS="$SCRIPT_DIR/external/skills"
+EXTERNAL_AGENTS="$SCRIPT_DIR/external/agents"
 CLAUDE_SKILLS="$HOME/.claude/skills"
 CLAUDE_AGENTS="$HOME/.claude/agents"
+AGENTS_SKILLS="$HOME/.agents/skills"
 
 echo "🔄 Syncing skills and agents..."
 
 # 폴더 생성
-mkdir -p "$CLAUDE_SKILLS" "$CLAUDE_AGENTS"
+mkdir -p "$CLAUDE_SKILLS" "$CLAUDE_AGENTS" "$AGENTS_SKILLS"
+mkdir -p "$CUSTOM_SKILLS" "$CUSTOM_AGENTS" "$EXTERNAL_SKILLS" "$EXTERNAL_AGENTS"
 
-# 기존 커스텀 스킬 symlink 정리 (skills-and-agents를 가리키는 것만)
+# 기존 skills-and-agents 관련 symlink 정리
 echo "📦 Cleaning old symlinks..."
-for link in "$CLAUDE_SKILLS"/*; do
+for link in "$CLAUDE_SKILLS"/* "$CLAUDE_AGENTS"/* "$AGENTS_SKILLS"/*; do
   if [ -L "$link" ]; then
     target=$(readlink "$link")
     if [[ "$target" == *"skills-and-agents"* ]]; then
@@ -26,38 +29,69 @@ for link in "$CLAUDE_SKILLS"/*; do
   fi
 done
 
-for link in "$CLAUDE_AGENTS"/*; do
-  if [ -L "$link" ]; then
-    target=$(readlink "$link")
-    if [[ "$target" == *"skills-and-agents"* ]]; then
-      rm "$link"
-    fi
-  fi
-done
-
-# 커스텀 스킬들 symlink
-echo "🔗 Linking skills..."
-for skill in "$SKILLS_SRC"/*; do
+# Custom 스킬 symlink
+echo "🔗 Linking custom skills..."
+for skill in "$CUSTOM_SKILLS"/*; do
+  [ -e "$skill" ] || continue
   name=$(basename "$skill")
-  target="$CLAUDE_SKILLS/$name"
 
-  if [ -e "$target" ] || [ -L "$target" ]; then
-    echo "  ⏭️  Skipped (exists): $name"
-  else
+  # ~/.claude/skills에 symlink
+  target="$CLAUDE_SKILLS/$name"
+  if [ ! -e "$target" ] && [ ! -L "$target" ]; then
     ln -s "$skill" "$target"
+    echo "  ✅ Linked to .claude/skills: $name"
+  fi
+
+  # ~/.agents/skills에 symlink
+  target="$AGENTS_SKILLS/$name"
+  if [ ! -e "$target" ] && [ ! -L "$target" ]; then
+    ln -s "$skill" "$target"
+    echo "  ✅ Linked to .agents/skills: $name"
+  fi
+done
+
+# External 스킬 symlink
+echo "🔗 Linking external skills..."
+for skill in "$EXTERNAL_SKILLS"/*; do
+  [ -e "$skill" ] || continue
+  name=$(basename "$skill")
+
+  # ~/.claude/skills에 symlink
+  target="$CLAUDE_SKILLS/$name"
+  if [ ! -e "$target" ] && [ ! -L "$target" ]; then
+    ln -s "$skill" "$target"
+    echo "  ✅ Linked to .claude/skills: $name"
+  fi
+
+  # ~/.agents/skills에 symlink
+  target="$AGENTS_SKILLS/$name"
+  if [ ! -e "$target" ] && [ ! -L "$target" ]; then
+    ln -s "$skill" "$target"
+    echo "  ✅ Linked to .agents/skills: $name"
+  fi
+done
+
+# Custom 에이전트 symlink
+echo "🔗 Linking custom agents..."
+for agent in "$CUSTOM_AGENTS"/*; do
+  [ -e "$agent" ] || continue
+  name=$(basename "$agent")
+  target="$CLAUDE_AGENTS/$name"
+
+  if [ ! -e "$target" ] && [ ! -L "$target" ]; then
+    ln -s "$agent" "$target"
     echo "  ✅ Linked: $name"
   fi
 done
 
-# 에이전트 symlink
-echo "🔗 Linking agents..."
-for agent in "$AGENTS_SRC"/*; do
+# External 에이전트 symlink
+echo "🔗 Linking external agents..."
+for agent in "$EXTERNAL_AGENTS"/*; do
+  [ -e "$agent" ] || continue
   name=$(basename "$agent")
   target="$CLAUDE_AGENTS/$name"
 
-  if [ -e "$target" ] || [ -L "$target" ]; then
-    echo "  ⏭️  Skipped (exists): $name"
-  else
+  if [ ! -e "$target" ] && [ ! -L "$target" ]; then
     ln -s "$agent" "$target"
     echo "  ✅ Linked: $name"
   fi
@@ -65,5 +99,6 @@ done
 
 echo ""
 echo "✨ Done!"
-echo "   Skills: $(ls -1 "$CLAUDE_SKILLS" | wc -l | tr -d ' ') items in $CLAUDE_SKILLS"
-echo "   Agents: $(ls -1 "$CLAUDE_AGENTS" | wc -l | tr -d ' ') items in $CLAUDE_AGENTS"
+echo "   .claude/skills: $(ls -1 "$CLAUDE_SKILLS" 2>/dev/null | wc -l | tr -d ' ') items"
+echo "   .claude/agents: $(ls -1 "$CLAUDE_AGENTS" 2>/dev/null | wc -l | tr -d ' ') items"
+echo "   .agents/skills: $(ls -1 "$AGENTS_SKILLS" 2>/dev/null | wc -l | tr -d ' ') items"
