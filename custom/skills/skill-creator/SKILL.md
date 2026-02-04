@@ -362,7 +362,9 @@ scripts/init_skill.py <skill-name> --path <output-directory>
 
 초기화 후 생성된 SKILL.md와 예시 파일을 필요에 따라 커스터마이즈하거나 제거하세요.
 
-**스킬 위치**: `/Users/doyoonlee/Desktop/dev_else/_my-projects/skills-and-agents/skills/`
+**스킬 위치**: `~/skills-and-agents/custom/skills/`
+
+**중요**: 커스텀 스킬은 `custom/skills/`에 생성됩니다. `skill` 명령어로 설치되는 외부 스킬은 `external/skills/`에 자동 저장됩니다.
 
 #### 전역 설정에 스킬 권한 등록
 
@@ -518,9 +520,15 @@ scripts/package_skill.py <path/to/skill-folder> ./dist
 install.sh를 실행하여 symlink를 생성하세요:
 
 ```bash
-cd /Users/doyoonlee/Desktop/dev_else/_my-projects/skills-and-agents
+cd ~/skills-and-agents
 ./install.sh
 ```
+
+**install.sh 동작 방식:**
+- `custom/skills/`와 `custom/agents/`의 모든 스킬/에이전트를 `~/.claude/skills`, `~/.claude/agents`, `~/.agents/skills`에 symlink 생성
+- `external/skills/`와 `external/agents/`의 외부 설치 스킬/에이전트도 동일하게 symlink 생성
+- 기존 symlink는 자동으로 정리되고 새로운 symlink로 대체됨
+- 이후 Claude Code를 재시작하면 새 스킬이 자동으로 인식됨
 
 ### 8단계: 완료 보고
 

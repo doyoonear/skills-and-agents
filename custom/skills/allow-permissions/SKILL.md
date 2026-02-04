@@ -18,7 +18,7 @@ description: |
 - 제공된 모든 이미지를 분석 대상으로 사용
 
 **사용자가 이미지를 제공하지 않은 경우:**
-1. 스크린샷 폴더 확인: `/Users/doyoonlee/Documents/screenshot`
+1. 스크린샷 폴더 확인: `~/Documents/screenshot`
 2. 사용자에게 몇 개의 최근 스크린샷을 분석할지 질문
 3. 기본값: 가장 최근 1개
 
@@ -67,7 +67,7 @@ description: |
 | `Bash(npm install)` | `Bash(npm *)` (와일드카드 일반화) |
 | `Bash(pnpm run dev)` | `Bash(pnpm *)` |
 | `Bash(python script.py)` | `Bash(python3 *)` |
-| `Read(/path/to/file)` | `Read(/Users/doyoonlee/**)` (경로 일반화) |
+| `Read(/path/to/file)` | `Read(~/**)` (경로 일반화) |
 | `mcp__server__tool` | `mcp__server__*` (서버 단위 와일드카드) |
 
 **중복 확인:**
