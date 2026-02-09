@@ -31,6 +31,7 @@ fi
 CURRENT_ITER=$(grep '^iteration:' "$STATE_FILE" 2>/dev/null | sed 's/iteration: *//' || echo "0")
 MAX_ITER=$(grep '^max_iterations:' "$STATE_FILE" 2>/dev/null | sed 's/max_iterations: *//' || echo "50")
 COMPLETION_PROMISE=$(grep '^completion_promise:' "$STATE_FILE" 2>/dev/null | sed 's/completion_promise: *//' | tr -d '"' || echo "")
+TASK_SLUG=$(grep '^task_slug:' "$STATE_FILE" 2>/dev/null | sed 's/task_slug: *//' | tr -d '"' || echo "")
 
 # stdin에서 Claude의 마지막 출력 읽기 (hook input JSON)
 HOOK_INPUT=$(cat)
@@ -40,9 +41,6 @@ CLAUDE_OUTPUT=$(echo "$HOOK_INPUT" | jq -r '.transcript // ""' 2>/dev/null || ec
 if [[ -n "$COMPLETION_PROMISE" ]] && echo "$CLAUDE_OUTPUT" | grep -q "$COMPLETION_PROMISE"; then
   # 진행 상황 로깅
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] COMPLETED: Found completion promise '$COMPLETION_PROMISE' at iteration $CURRENT_ITER" >> "$PROGRESS_LOG"
-
-  # 상태 파일 정리 (선택적: 주석 해제하면 자동 정리)
-  # rm -rf "$RALPH_DIR"
 
   echo "Ralph Loop 완료! (반복 $CURRENT_ITER회, 완료 조건: $COMPLETION_PROMISE)"
   exit 0
@@ -65,13 +63,22 @@ sed -i.bak "s/^iteration: .*/iteration: $NEW_ITER/" "$STATE_FILE" && rm -f "$STA
 # 진행 상황 로깅
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] ITERATION $NEW_ITER/$MAX_ITER: Continuing..." >> "$PROGRESS_LOG"
 
+# 핸드오프 문서 경로
+HANDOFF_PATH=""
+if [[ -n "$TASK_SLUG" ]]; then
+  HANDOFF_PATH="docs/ralph-${TASK_SLUG}/HANDOFF.md"
+fi
+
 # 프롬프트 재주입 (exit 2로 종료 차단)
 if [[ -f "$PROMPT_FILE" ]]; then
   echo ""
   echo "=== Ralph Loop: 반복 $NEW_ITER/$MAX_ITER ==="
   echo ""
-  echo "/compact"  # 컨텍스트 초기화로 장시간 세션 안정성 확보
-  echo ""
+  # 핸드오프 문서를 먼저 읽도록 지시
+  if [[ -n "$HANDOFF_PATH" ]] && [[ -f "$HANDOFF_PATH" ]]; then
+    echo "먼저 $HANDOFF_PATH 를 읽고 이전 진행 상황을 파악한 후 이어서 작업하세요."
+    echo ""
+  fi
   cat "$PROMPT_FILE"
   exit 2
 else

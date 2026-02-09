@@ -55,7 +55,7 @@ description: |
 - 모든 subgraph에 일관되게 적용
 - 다이어그램 최상단에 테마 설정 추가:
   ```
-  %%{init: {'theme':'dark', 'themeVariables': { 'clusterBkg':'#37353E', 'clusterBorder':'#37353E'}}}%%
+  %%{init: {'theme':'dark', 'themeVariables': { 'clusterBkg':'#37353E', 'clusterBorder':'#37353E', 'nodeShadow':'none'}}}%%
   ```
 
 **블록 배경색 팔레트**:
@@ -81,6 +81,9 @@ style NodeName fill:#9CCFFF,stroke:#1A3263,stroke-width:2px,color:#000
 - 빨강 계열: `#FF5B5B` (fill) + `#F96E5B` (stroke)
 
 #### 플로우차트 (Flowchart)
+- **가로형 기본**: `graph LR` (Left to Right)을 기본으로 사용
+  - 가로형이 화면 공간 활용과 가독성에 유리
+  - 세로형(`graph TB`)은 사용자가 명시적으로 요청할 때만 사용
 - **subgraph** 활용: 논리적 그룹핑 (Desktop, Cloud, Database 등)
 - **이모지 사용**: 컴포넌트 식별력 향상 (💻, ☁️, 🗄️, 💬 등)
 - **화살표 번호**: 데이터 흐름 순서 명시 (`-->|1. 녹화 데이터|`)
@@ -88,8 +91,8 @@ style NodeName fill:#9CCFFF,stroke:#1A3263,stroke-width:2px,color:#000
 
 예시:
 ```mermaid
-%%{init: {'theme':'dark', 'themeVariables': { 'clusterBkg':'#37353E', 'clusterBorder':'#37353E'}}}%%
-graph TB
+%%{init: {'theme':'dark', 'themeVariables': { 'clusterBkg':'#37353E', 'clusterBorder':'#37353E', 'nodeShadow':'none'}}}%%
+graph LR
     subgraph Desktop["💻 Desktop App"]
         UI["Next.js UI"]
         Core["Tauri Core"]
@@ -124,7 +127,40 @@ sequenceDiagram
     Note over API: 백그라운드 처리
 ```
 
-### 5. 저장 및 README 관리
+### 5. PNG/PDF 렌더링 시 viewport 설정 (필수)
+
+`claude-mermaid` MCP 또는 `mmdc` CLI로 PNG/PDF를 생성할 때, 기본 viewport(`800x600`)는 복잡한 다이어그램에서 오른쪽 끝 텍스트가 잘리는 문제를 유발합니다.
+
+#### 다이어그램 복잡도별 viewport 설정
+
+| 복잡도 | 노드 수 | width | height | 예시 |
+|--------|---------|-------|--------|------|
+| 단순 | ~10개 | 1200 | 800 | 간단한 3-4단계 플로우 |
+| 보통 | 10~30개 | 1800 | 1200 | subgraph 2-3개 포함 |
+| 복잡 | 30개+ | 2400 | 1600 | subgraph 5개+, 다수 연결선 |
+
+#### 적용 방법
+
+**claude-mermaid MCP 사용 시**:
+- `width`와 `height` 파라미터를 다이어그램 복잡도에 맞게 설정
+- `scale: 2` (기본값) 유지하여 고해상도 출력
+
+**mmdc CLI 직접 사용 시**:
+```bash
+npx -y @mermaid-js/mermaid-cli \
+  -i input.mmd -o output.png \
+  -t dark -b transparent \
+  -w 2400 -H 1600 -s 2
+```
+
+#### 왜 이 설정이 필요한가?
+
+- `-w`/`-H`는 출력 이미지 크기가 아니라 **Puppeteer 브라우저 viewport 크기**
+- 다이어그램이 viewport보다 크면 넘치는 부분이 잘림
+- `-s`(scale)는 해상도만 높이며 viewport를 확장하지 않음
+- `graph LR` 가로형은 수평으로 매우 넓어지므로 넉넉한 width 필수
+
+### 6. 저장 및 README 관리
 
 #### 저장 경로
 `docs/report/<context>/<name>.mmd` 형식으로 저장합니다.
@@ -145,9 +181,10 @@ sequenceDiagram
 ## 참조 차트
 
 ### 02-recommended-architecture.mmd
-**타입**: Flowchart (Graph TB)
+**타입**: Flowchart (Graph LR - 가로형)
 
 **주요 패턴**:
+- **가로형 레이아웃** (`graph LR`): 화면 공간 활용 및 가독성 최적화
 - 4개 레이어 구조 (Desktop, Cloud, Data, Integration)
 - subgraph로 논리적 그룹핑
 - 12단계 데이터 흐름 화살표 (`-->|1. 녹화|`, `-->|2. 업로드|`)
@@ -169,11 +206,13 @@ sequenceDiagram
 
 - [ ] Mermaid MCP로 최신 문법 검증
 - [ ] 적절한 다이어그램 타입 선택
+- [ ] **플로우차트는 가로형(`graph LR`) 기본 사용** (세로형은 명시적 요청 시만)
 - [ ] 이모지 및 색상 스타일 적용
 - [ ] **블록 텍스트 색상 검은색 적용** (`color:#000`)
 - [ ] **팔레트 색상 사용** (제공된 21개 색상 중 선택)
 - [ ] **Subgraph 배경색 #37353E 적용** (다이어그램 최상단에 테마 설정 추가)
 - [ ] 화살표에 번호 또는 레이블 추가 (플로우차트)
+- [ ] **PNG/PDF 렌더링 시 복잡도에 맞는 viewport 설정** (단순 1200, 보통 1800, 복잡 2400)
 - [ ] `docs/report/<context>/<name>.mmd` 경로에 저장
 - [ ] 해당 폴더의 README.md 업데이트
 

@@ -3,21 +3,27 @@
 # 진행 중인 Ralph 세션을 취소합니다.
 #
 # 사용법:
-#   ./cancel-ralph.sh [--keep-logs]
+#   ./cancel-ralph.sh [--keep-logs] [--keep-handoff]
 #
 # 옵션:
 #   --keep-logs: 진행 로그는 삭제하지 않음
+#   --keep-handoff: 핸드오프 문서는 삭제하지 않음
 
 set -euo pipefail
 
 RALPH_DIR=".ralph"
 KEEP_LOGS=false
+KEEP_HANDOFF=false
 
 # 인자 파싱
 while [[ $# -gt 0 ]]; do
   case $1 in
     --keep-logs)
       KEEP_LOGS=true
+      shift
+      ;;
+    --keep-handoff)
+      KEEP_HANDOFF=true
       shift
       ;;
     *)
@@ -33,17 +39,33 @@ if [[ ! -d "$RALPH_DIR" ]]; then
 fi
 
 # 현재 상태 표시
+TASK_SLUG=""
 if [[ -f "$RALPH_DIR/state.md" ]]; then
   echo "=== 현재 Ralph 세션 정보 ==="
   CURRENT_ITER=$(grep '^iteration:' "$RALPH_DIR/state.md" 2>/dev/null | sed 's/iteration: *//' || echo "0")
   MAX_ITER=$(grep '^max_iterations:' "$RALPH_DIR/state.md" 2>/dev/null | sed 's/max_iterations: *//' || echo "?")
   PROMISE=$(grep '^completion_promise:' "$RALPH_DIR/state.md" 2>/dev/null | sed 's/completion_promise: *//' | tr -d '"' || echo "?")
   STARTED=$(grep '^started_at:' "$RALPH_DIR/state.md" 2>/dev/null | sed 's/started_at: *//' | tr -d '"' || echo "?")
+  TASK_SLUG=$(grep '^task_slug:' "$RALPH_DIR/state.md" 2>/dev/null | sed 's/task_slug: *//' | tr -d '"' || echo "")
 
   echo "  - 진행: $CURRENT_ITER/$MAX_ITER 반복"
   echo "  - 완료 조건: $PROMISE"
   echo "  - 시작 시간: $STARTED"
+  if [[ -n "$TASK_SLUG" ]]; then
+    echo "  - Task slug: $TASK_SLUG"
+  fi
   echo ""
+fi
+
+# 핸드오프 폴더 처리
+if [[ -n "$TASK_SLUG" ]] && [[ "$KEEP_HANDOFF" == "false" ]]; then
+  HANDOFF_DIR="docs/ralph-${TASK_SLUG}"
+  if [[ -d "$HANDOFF_DIR" ]]; then
+    rm -rf "$HANDOFF_DIR"
+    echo "핸드오프 문서 삭제됨: $HANDOFF_DIR"
+  fi
+elif [[ -n "$TASK_SLUG" ]] && [[ "$KEEP_HANDOFF" == "true" ]]; then
+  echo "핸드오프 문서 보존됨: docs/ralph-${TASK_SLUG}/HANDOFF.md"
 fi
 
 # 로그 보존 여부에 따라 삭제

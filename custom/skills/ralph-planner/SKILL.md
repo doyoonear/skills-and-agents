@@ -18,8 +18,8 @@ description: |
 
 Ralph Loop는 **Stop Hook 기반 자기 참조 루프**:
 - Claude가 종료하려 할 때 Stop Hook이 가로채서 프롬프트 재주입
-- 컨텍스트 초기화 후 같은 프롬프트로 재시작
-- 진행 상황은 **파일과 git 히스토리**에 저장
+- 새 세션은 **HANDOFF.md**를 읽고 이전 진행 상황을 파악 후 이어서 작업
+- 진행 상황은 **HANDOFF.md + git 히스토리**에 저장
 - 장시간 무인 작업에 최적화
 
 ## 워크플로우
@@ -76,19 +76,24 @@ Ralph Loop는 **Stop Hook 기반 자기 참조 루프**:
 ## Requirements
 [사용자 요구사항 - 명확하고 구체적으로]
 
+## Handoff Protocol
+- 핸드오프 문서 경로: `docs/ralph-{task-slug}/HANDOFF.md`
+- 세션 시작 시 반드시 HANDOFF.md를 읽고 이전 진행 상황 파악
+- Phase 완료 시 반드시 HANDOFF.md 업데이트 후 커밋
+
 ## Implementation Plan (with Commit Points)
 
 ### Phase 1: [Phase 제목]
 1. [구체적 작업 1]
 2. [구체적 작업 2]
-3. git commit -m "[type]: [커밋 메시지]"
-4. **Phase 1 완료 - 반드시 /compact 명령을 실행하세요**
+3. HANDOFF.md 업데이트 (Phase 1 완료 기록)
+4. git add -A && git commit -m "[type]: [커밋 메시지]"
 
 ### Phase 2: [Phase 제목]
 1. [구체적 작업 1]
 2. [구체적 작업 2]
-3. git commit -m "[type]: [커밋 메시지]"
-4. **Phase 2 완료 - 반드시 /compact 명령을 실행하세요**
+3. HANDOFF.md 업데이트 (Phase 2 완료 기록)
+4. git add -A && git commit -m "[type]: [커밋 메시지]"
 
 ...
 
@@ -99,11 +104,14 @@ Ralph Loop는 **Stop Hook 기반 자기 참조 루프**:
 - [ ] lint/type 에러 없음
 
 ## Completion
-모든 Success Criteria 충족 시 출력:
-<promise>[TYPE]_DONE</promise>
+모든 Success Criteria 충족 시:
+1. HANDOFF.md에 최종 완료 기록
+2. `docs/ralph-{task-slug}/` 폴더 삭제
+3. git add -A && git commit -m "[type]: [최종 커밋 메시지]"
+4. 출력: <promise>[TYPE]_DONE</promise>
 
 ## If Stuck (15회 반복 후에도 미완료 시)
-- 진행 차단 요소 문서화
+- 진행 차단 요소를 HANDOFF.md에 문서화
 - 시도한 방법 목록 작성
 - 대안 접근법 제안
 ```
@@ -128,6 +136,7 @@ Ralph Loop는 **Stop Hook 기반 자기 참조 루프**:
 **복잡도**: [small/medium/large]
 **max-iterations**: [10/30/50]
 **completion-promise**: [TYPE]_DONE
+**핸드오프 경로**: docs/ralph-[task-slug]/HANDOFF.md
 
 ### 생성된 프롬프트:
 [프롬프트 내용]
@@ -141,13 +150,14 @@ Ralph Loop는 **Stop Hook 기반 자기 참조 루프**:
 ### 1. Setup 스크립트 실행
 
 ```bash
-~/.claude/skills/ralph-planner/scripts/setup-ralph.sh "<프롬프트>" --max-iterations <n> --completion-promise "<TYPE>_DONE"
+~/.claude/skills/ralph-planner/scripts/setup-ralph.sh "<프롬프트>" --max-iterations <n> --completion-promise "<TYPE>_DONE" --task-slug "<영문-타이틀>"
 ```
 
-이 스크립트가 `.ralph/` 디렉토리에 상태 파일을 생성합니다:
-- `.ralph/state.md`: 세션 상태 (반복 횟수, 세션 ID 등)
+이 스크립트가 생성하는 파일:
+- `.ralph/state.md`: 세션 상태 (반복 횟수, 세션 ID, task-slug 등)
 - `.ralph/prompt.md`: 프롬프트 저장
 - `.ralph/progress.log`: 진행 로그
+- `docs/ralph-{task-slug}/HANDOFF.md`: 핸드오프 문서 (초기 상태)
 
 ### 2. 프롬프트 전달
 
@@ -157,7 +167,6 @@ Stop Hook이 자동으로 루프를 관리합니다.
 ### 실행 예시
 
 ```bash
-# 1. Setup
 ~/.claude/skills/ralph-planner/scripts/setup-ralph.sh "# FEATURE: 다크모드 토글
 
 ## Context
@@ -169,11 +178,23 @@ React + TypeScript 프로젝트
 - 시스템 설정 감지
 - localStorage에 선호도 저장
 
+## Handoff Protocol
+- 핸드오프 문서 경로: docs/ralph-dark-mode-toggle/HANDOFF.md
+- 세션 시작 시 반드시 HANDOFF.md를 읽고 이전 진행 상황 파악
+- Phase 완료 시 반드시 HANDOFF.md 업데이트 후 커밋
+
 ## Implementation Plan
+### Phase 1: 테마 인프라
 1. ThemeProvider 컨텍스트 생성
 2. useTheme 훅 구현
-3. 토글 버튼 컴포넌트 생성
-4. 다크모드 스타일 적용
+3. HANDOFF.md 업데이트
+4. git commit -m \"feat: ThemeProvider 및 useTheme 훅 구현\"
+
+### Phase 2: UI 구현
+1. 토글 버튼 컴포넌트 생성
+2. 다크모드 스타일 적용
+3. HANDOFF.md 업데이트
+4. git commit -m \"feat: 다크모드 토글 버튼 및 스타일 적용\"
 
 ## Success Criteria
 - [ ] 토글 클릭 시 테마 전환
@@ -183,13 +204,14 @@ React + TypeScript 프로젝트
 - [ ] lint/type 에러 없음
 
 ## Completion
-<promise>FEATURE_DONE</promise>
+모든 Success Criteria 충족 시:
+1. docs/ralph-dark-mode-toggle/ 폴더 삭제
+2. git commit -m \"feat: 다크모드 토글 기능 완료\"
+3. <promise>FEATURE_DONE</promise>
 
 ## If Stuck
-- 진행 차단 요소 문서화
-- 시도한 방법 목록 작성" --max-iterations 30 --completion-promise "FEATURE_DONE"
-
-# 2. 프롬프트를 Claude에게 전달 (위 setup 후 자동으로 진행)
+- 진행 차단 요소를 HANDOFF.md에 문서화
+- 시도한 방법 목록 작성" --max-iterations 30 --completion-promise "FEATURE_DONE" --task-slug "dark-mode-toggle"
 ```
 
 ## 중단 및 재개
@@ -208,11 +230,13 @@ React + TypeScript 프로젝트
 ```bash
 cat .ralph/progress.log
 cat .ralph/state.md
+# 핸드오프 문서 확인 (task-slug에 맞게 경로 지정)
+cat docs/ralph-{task-slug}/HANDOFF.md
 ```
 
 ### 재개 방법
 
-동일한 프롬프트로 다시 시작하면 `.ralph/` 상태를 기반으로 이어서 진행.
+동일한 프롬프트로 다시 시작하면 HANDOFF.md를 기반으로 이어서 진행.
 
 ## 안전장치
 
@@ -224,6 +248,7 @@ cat .ralph/state.md
 | **completion-promise** | 완료 조건 문자열 매칭 시 루프 종료 |
 | **세션 격리** | 터미널 세션 ID 기반 (다중 세션 버그 방지) |
 | **진행 상황 로깅** | `.ralph/progress.log`에 각 반복 기록 |
+| **핸드오프 문서** | `docs/ralph-{task-slug}/HANDOFF.md`에 작업 맥락 보존 |
 
 ### 세션 격리 (다중 세션 버그 방지)
 
@@ -239,6 +264,7 @@ term_session_id: "xxx-xxx-xxx"
 iteration: 5
 max_iterations: 30
 completion_promise: "FEATURE_DONE"
+task_slug: "dark-mode-toggle"
 started_at: "2025-01-12T10:00:00"
 ---
 ```
@@ -249,11 +275,44 @@ started_at: "2025-01-12T10:00:00"
 [2025-01-12 10:00:00] STARTED: Ralph Loop initialized
   - Max iterations: 30
   - Completion promise: FEATURE_DONE
+  - Task slug: dark-mode-toggle
   - Terminal session: xxx-xxx-xxx
 [2025-01-12 10:01:00] ITERATION 1/30: Continuing...
 [2025-01-12 10:02:00] ITERATION 2/30: Continuing...
 ...
 [2025-01-12 10:30:00] COMPLETED: Found completion promise 'FEATURE_DONE' at iteration 15
+```
+
+### `docs/ralph-{task-slug}/HANDOFF.md`
+
+```markdown
+# HANDOFF: [작업 제목]
+
+## 마지막 업데이트
+- 세션: N번째 반복
+- 시간: YYYY-MM-DD HH:MM
+
+## Task Checklist
+- [x] Phase 1: [제목] - 완료
+- [ ] Phase 2: [제목] - 진행 중 (Step 2/4)
+- [ ] Phase 3: [제목] - 미시작
+
+## 현재 Phase 상세
+### Phase 2: [제목]
+- 완료: Step 1 (파일 생성), Step 2 (로직 구현)
+- 진행 중: Step 3 (테스트 작성)
+- 남은 작업: Step 4 (통합 테스트)
+
+## 의사결정 기록
+- [결정 사항]: [이유]
+- [결정 사항]: [이유]
+
+## 발견한 이슈 / 주의사항
+- [이슈 설명]
+
+## 다음 세션이 해야 할 일
+1. [구체적 작업]
+2. [구체적 작업]
 ```
 
 ## 슬립 방지 (macOS)
@@ -320,22 +379,30 @@ Implementation Plan 작성 시 **각 단계별 커밋 시점을 미리 명시**�
 - 커밋 메시지 템플릿을 계획 단계에서 작성
 - Phase 완료 전 반드시 커밋하여 진행 상황 보존
 
-### 원칙 2: 커밋 후 Compaction 실행
+### 원칙 2: 커밋 전 핸드오프 문서 작성
 
-모든 커밋 직후 `/compact` 명령을 실행합니다.
+모든 커밋 직전에 `docs/ralph-{task-slug}/HANDOFF.md`를 업데이트합니다.
 
-- 컨텍스트 초기화로 장시간 세션 안정성 확보
-- 긴 세션에서도 일관된 동작 보장
-- Stop Hook 재시작 시 깔끔한 상태 유지
+- Task Checklist에 완료/진행 상태 반영
+- 의사결정 기록 (왜 이 방식을 선택했는지)
+- 다음 세션이 알아야 할 맥락 정보
+- 발견한 이슈나 주의사항
+
+### 원칙 3: 완료 시 핸드오프 폴더 정리
+
+모든 Success Criteria 충족 후:
+1. HANDOFF.md에 최종 완료 기록
+2. `docs/ralph-{task-slug}/` 폴더 삭제
+3. 삭제를 포함하여 최종 커밋
 
 ### 워크플로우 다이어그램
 
 ```
-┌─────────────┐    ┌──────────┐    ┌────────┐    ┌───────────┐
-│ Phase 구현  │ → │  테스트   │ → │  커밋  │ → │ /compact  │
-└─────────────┘    └──────────┘    └────────┘    └───────────┘
-       ↑                                              │
-       └──────────────── 다음 Phase ←─────────────────┘
+┌─────────────┐    ┌──────────┐    ┌──────────────────┐    ┌────────┐
+│ Phase 구현  │ → │  테스트   │ → │ HANDOFF.md 업데이트│ → │  커밋  │
+└─────────────┘    └──────────┘    └──────────────────┘    └────────┘
+       ↑                                                        │
+       └──────────────── 다음 Phase ←───────────────────────────┘
 ```
 
 ### 예시 워크플로우
@@ -343,12 +410,12 @@ Implementation Plan 작성 시 **각 단계별 커밋 시점을 미리 명시**�
 ```
 1. 프리셋 타입 정의 구현
 2. 테스트/검증
-3. git commit -m "feat: 프리셋 타입 및 데이터 정의"
-4. /compact  ← 필수!
+3. HANDOFF.md 업데이트 (Phase 1 완료, Phase 2 시작 예정)
+4. git add -A && git commit -m "feat: 프리셋 타입 및 데이터 정의"
 5. Store 수정 구현
 6. 테스트/검증
-7. git commit -m "feat: trainingStore에 프리셋 선택 상태 추가"
-8. /compact  ← 필수!
+7. HANDOFF.md 업데이트 (Phase 2 완료, Phase 3 시작 예정)
+8. git add -A && git commit -m "feat: trainingStore에 프리셋 선택 상태 추가"
 9. ... 반복
 ```
 
@@ -360,7 +427,7 @@ Implementation Plan 작성 시 **각 단계별 커밋 시점을 미리 명시**�
 4. **아키텍처 결정**이 필요한 작업은 사전에 결정 후 실행
 5. **다중 세션 사용 시** 각 터미널에서 독립적으로 작동 (세션 격리)
 6. **macOS에서 장시간 실행 시** caffeinate로 슬립 방지 필수
-7. **필수 원칙 준수** - 위 "필수 원칙" 섹션의 커밋/compaction 규칙 필수 이행
+7. **필수 원칙 준수** - 위 "필수 원칙" 섹션의 커밋/핸드오프 규칙 필수 이행
 
 ## 스크립트 위치
 
