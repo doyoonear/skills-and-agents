@@ -1,9 +1,9 @@
 ---
 name: mermaid-diagram-creator
 description: |
-  최신 Mermaid 문법을 활용한 아키텍처 다이어그램 및 시스템 시각화 생성 스킬.
-  다음 요청 시 사용: "머메이드 차트", "다이어그램 생성", "아키텍처 도표", "시스템 설계", "플로우차트", "시퀀스 다이어그램", "데이터 흐름", "워크플로우 시각화"
-  한글 트리거: "머메이드", "다이어그램", "차트", "도표", "플로우", "시퀀스", "아키텍처"
+  최신 Mermaid 문법을 활용한 아키텍처 다이어그램 및 시스템 시각화 생성.
+  Use when creating diagrams, flowcharts, sequence diagrams, architecture charts, or data flow visualizations with Mermaid, or when user mentions "머메이드", "다이어그램", "플로우차트", "시퀀스 다이어그램", "아키텍처 도표".
+  Not for non-Mermaid diagram tools (draw.io, Excalidraw, etc.).
 ---
 
 # Mermaid Diagram Creator

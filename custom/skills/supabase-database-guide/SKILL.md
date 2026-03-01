@@ -2,8 +2,8 @@
 name: supabase-database-guide
 description: |
   Supabase 데이터베이스 개발 가이드. Migration 작성, 로컬/원격 환경 관리, RLS 정책 설정.
-  다음 요청 시 사용: "supabase migration", "DB 스키마 변경", "테이블 추가", "RLS 정책", "로컬 DB 설정"
-  한글 트리거: "수파베이스 마이그레이션", "DB 마이그레이션", "테이블 생성", "로컬 환경 설정"
+  Use when writing Supabase migrations, managing DB schemas, configuring RLS policies, or setting up local/remote environments, or when user mentions "supabase migration", "DB 스키마", "테이블 추가", "RLS 정책".
+  Not for Supabase Auth, Storage, or Edge Functions.
 ---
 
 # Supabase Database Development Guide

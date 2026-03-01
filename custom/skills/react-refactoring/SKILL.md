@@ -1,15 +1,9 @@
 ---
 name: react-refactoring
 description: |
-  React 컴포넌트 코드를 분석하고 개선점을 찾아 리팩토링합니다.
-  다음과 같은 요청 시 이 skill을 사용하세요:
-  - "리팩토링해줘"
-  - "코드 개선해줘"
-  - "코드 정리해줘"
-  - "코드 최적화해줘"
-  - "클린 코드로 바꿔줘"
-  - "코드 품질 개선해줘"
-  - "refactor"
+  React 컴포넌트 코드 분석 및 리팩토링. 코드 품질 개선, 클린 코드 변환, 최적화 수행.
+  Use when refactoring React components, improving code quality, or cleaning up code, or when user mentions "리팩토링", "코드 개선", "코드 정리", "코드 최적화", "refactor".
+  Not for removing unused code (use refactor-clean) or architecture redesign (use component-architecture).
 ---
 
 # React Refactoring Skill

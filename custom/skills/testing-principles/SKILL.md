@@ -1,8 +1,9 @@
 ---
 name: testing-principles
 description: |
-  테스트 코드 작성 원칙: 단위 테스트와 통합 테스트 구분, 작성 기준, Python/pytest 패턴.
-  트리거: "테스트 작성", "테스트 코드", "단위 테스트", "통합 테스트", "pytest", "테스트 리뷰", "테스트 검토", "테스트 개선" 관련 요청 시 사용
+  테스트 코드 작성 원칙. 단위 테스트와 통합 테스트 구분, 안티패턴 방지, Python/pytest 패턴.
+  Use when writing test code, reviewing test quality, or distinguishing unit vs integration tests, or when user mentions "테스트 작성", "단위 테스트", "통합 테스트", "pytest", "테스트 리뷰".
+  Not for E2E/browser testing (use Playwright skill instead).
 ---
 
 # Testing Principles: 단위 테스트 vs 통합 테스트

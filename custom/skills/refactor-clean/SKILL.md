@@ -1,13 +1,9 @@
 ---
 name: refactor-clean
 description: |
-  프로젝트에서 사용되지 않는 코드를 찾아 정리합니다.
-  다음과 같은 요청 시 이 skill을 사용하세요:
-  - "미사용 코드 정리해줘", "사용하지 않는 코드 정리"
-  - "안 쓰는 코드 삭제해줘", "죽은 코드 정리"
-  - "미사용 컴포넌트 찾아줘", "사용 안하는 파일 삭제"
-  - "미사용 import 정리", "불필요한 코드 제거"
-  - "cleanup unused code", "remove dead code"
+  프로젝트에서 미사용 코드를 찾아 정리. Dead code 탐지, 미사용 import/컴포넌트/파일 제거.
+  Use when cleaning up unused code, removing dead imports, or finding unused components, or when user mentions "미사용 코드 정리", "죽은 코드", "안 쓰는 코드", "cleanup unused", "remove dead code".
+  Not for code quality refactoring (use react-refactoring) or general code review.
 ---
 
 # 미사용 코드 정리 (Cleanup Unused Code)

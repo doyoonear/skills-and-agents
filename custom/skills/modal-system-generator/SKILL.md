@@ -1,13 +1,9 @@
 ---
 name: modal-system-generator
 description: |
-  프로젝트에 Promise 기반 모달/오버레이 시스템을 생성합니다.
-  다음과 같은 요청 시 이 skill을 사용하세요:
-  - "모달 시스템 만들어줘"
-  - "overlay 시스템 추가해줘"
-  - "Promise 기반 모달 구현해줘"
-  - "팝업/다이얼로그 시스템 세팅해줘"
-  - "바텀시트 시스템 만들어줘"
+  Promise 기반 모달/오버레이 시스템 생성. 다이얼로그, 바텀시트, 팝업을 프로젝트에 통합.
+  Use when building a modal system, overlay infrastructure, or Promise-based dialog/bottomsheet, or when user mentions "모달 시스템", "overlay 시스템", "Promise 모달", "바텀시트 시스템".
+  Not for individual modal component styling or single-use dialogs.
 ---
 
 # Modal System Generator

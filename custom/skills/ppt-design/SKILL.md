@@ -2,8 +2,8 @@
 name: ppt-design
 description: |
   웹 기반 프레젠테이션 페이지 및 슬라이드 컴포넌트 디자인 가이드.
-  다음 요청 시 사용: "프레젠테이션 만들어줘", "슬라이드 페이지 생성", "PPT 컴포넌트 작성", "슬라이드 디자인 리뷰", "프레젠테이션 레이아웃 확인"
-  트리거 키워드: "프레젠테이션", "슬라이드", "PPT", "발표 자료", "슬라이드쇼", "presentation", "slide"
+  Use when designing web-based presentation pages, slide components, or reviewing slide layouts, or when user mentions "프레젠테이션", "슬라이드", "PPT", "발표 자료", "presentation", "slide".
+  Not for PowerPoint/Keynote file generation or PDF slide exports.
 ---
 
 # Web-based Presentation Design Guide

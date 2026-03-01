@@ -1,12 +1,9 @@
 ---
 name: verification-loop
 description: |
-  코드 작성 후 빌드, 테스트, 린트를 순차 실행하여 검증합니다.
-  다음과 같은 요청 시 이 skill을 사용하세요:
-  - "/verify", "검증해줘"
-  - "빌드하고 테스트 돌려줘"
-  - "코드 확인해줘"
-  - "린트 돌려줘"
+  코드 검증 루프. 빌드, 테스트, 린트를 순차 실행하여 코드 품질 검증.
+  Use when verifying code after changes, running build-test-lint pipeline, or when user mentions "/verify", "검증해줘", "빌드하고 테스트", "린트 돌려줘".
+  Not for individual build or lint commands without the full verification loop.
 ---
 
 # Verification Loop Skill

@@ -1,12 +1,9 @@
 ---
 name: tdd-workflow
 description: |
-  테스트 주도 개발(TDD) 방식으로 코드를 작성합니다.
-  다음과 같은 요청 시 이 skill을 사용하세요:
-  - "/tdd", "TDD로 구현해줘"
-  - "테스트 먼저 작성해줘"
-  - "테스트 주도 개발로 해줘"
-  - "RED-GREEN-REFACTOR로 해줘"
+  테스트 주도 개발(TDD) 워크플로우. RED-GREEN-REFACTOR 사이클로 테스트 먼저 작성 후 구현.
+  Use when implementing features with TDD approach, or when user mentions "TDD", "테스트 먼저", "테스트 주도 개발", "RED-GREEN-REFACTOR", "/tdd".
+  Not for writing tests after implementation (use testing-principles) or E2E tests.
 ---
 
 # TDD Workflow Skill

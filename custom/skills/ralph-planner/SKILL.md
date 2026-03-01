@@ -1,13 +1,9 @@
 ---
 name: ralph-planner
 description: |
-  Ralph를 사용한 프로젝트 플래닝 및 자동 실행 시스템입니다.
-  다음과 같은 요청 시 이 skill을 사용하세요:
-  - "ralph를 사용해서 [작업 설명]"
-  - "Ralph로 [작업] 해줘"
-  - "/ralph [type] [설명]"
-  - "ralph feature/bugfix/refactor/optimize [설명]"
-  한글 트리거: "ralph 써서", "랄프로", "Ralph 사용해서" 등의 요청이 있을 때 사용.
+  Ralph 기반 프로젝트 플래닝 및 자동 반복 실행 시스템. Stop Hook으로 Phase별 자동 진행, HANDOFF.md로 맥락 보존.
+  Use when user wants Ralph-powered planning and execution, or mentions "ralph", "랄프", "/ralph", "ralph feature/bugfix/refactor".
+  Not for simple one-off tasks or manual step-by-step planning.
 ---
 
 # Ralph Planner

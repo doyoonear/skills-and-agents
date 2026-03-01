@@ -1,16 +1,9 @@
 ---
 name: error-handling-system
 description: |
-  React ErrorBoundary & Suspense 전역 처리 시스템입니다.
-  다음과 같은 요청 시 이 skill을 사용하세요:
-  - "에러시스템 적용", "에러 시스템 적용"
-  - "전역 에러 처리 적용", "전역 에러처리"
-  - "에러바운더리 적용", "에러 바운더리 적용"
-  - "ErrorBoundary 적용", "Error Boundary 적용"
-  - "에러 핸들링 시스템", "에러핸들링"
-  - "서스펜스 적용", "Suspense 적용"
-  - "스켈레톤 로딩", "skeleton 로딩"
-  - "로딩 스켈레톤", "스켈레톤 UI"
+  React ErrorBoundary & Suspense 전역 처리 시스템. 에러 경계, 로딩 스켈레톤, 전역 에러 핸들링 구현.
+  Use when setting up global error handling with ErrorBoundary, implementing Suspense with skeleton loading, or when user mentions "에러 시스템", "에러바운더리", "ErrorBoundary", "Suspense", "스켈레톤 로딩".
+  Not for try-catch error handling in server-side code or API error responses.
 ---
 
 # React ErrorBoundary & Suspense 전역 처리 시스템

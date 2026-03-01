@@ -1,13 +1,9 @@
 ---
 name: autonomous-agent
 description: |
-  장기 실행 자율 코딩 에이전트입니다.
-  다음과 같은 요청 시 이 skill을 사용하세요:
-  - "논스탑 에이전트로 [앱] 만들어줘"
-  - "자율 에이전트 시작"
-  - "/autonomous [설명]"
-  - "논스탑 계속", "에이전트 재개"
-  한글 트리거: "논스탑", "자율 에이전트", "장기 실행" 등의 요청이 있을 때 사용.
+  장기 실행 자율 코딩 에이전트. Stop Hook 기반 반복 실행으로 복잡한 작업을 논스탑으로 수행.
+  Use when user wants autonomous long-running coding, or mentions "논스탑", "자율 에이전트", "장기 실행", "/autonomous".
+  Not for short single-step tasks or interactive Q&A sessions.
 ---
 
 # Autonomous Agent (논스탑 에이전트)
