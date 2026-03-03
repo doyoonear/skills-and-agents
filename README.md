@@ -13,7 +13,7 @@ skills-and-agents/
 │   ├── skills/            # 커스텀 스킬 (44개)
 │   └── agents/            # 커스텀 에이전트 (4개)
 ├── external/              # 외부에서 가져온 스킬/에이전트
-│   ├── skills/            # 외부 스킬 (41개)
+│   ├── skills/            # 외부 스킬 (47개)
 │   └── agents/            # 외부 에이전트 (0개)
 └── backup/                # 로컬 백업 (gitignore)
 ```
@@ -142,6 +142,127 @@ echo "# My Agent" > custom/agents/my-agent.md
 - **범용 에이전트 (Cursor, Windsurf 등)**: `~/.agents/skills/`
 
 다른 플랫폼 symlink가 필요하면 `install.sh`를 수정하세요.
+
+## Agentation & Agent-Browser 사용 가이드
+
+UI 시각적 피드백 + AI 자율 디자인 리뷰를 위한 도구 세트입니다.
+
+### 구성 요소
+
+| 항목 | 종류 | 역할 |
+|------|------|------|
+| `agentation` | 스킬 | 프로젝트에 `<Agentation />` 툴바 세팅 |
+| `agentation-self-driving` | 스킬 | AI가 자율적으로 브라우저를 순회하며 디자인 비평 |
+| `agentation-mcp` | MCP 서버 | 에이전트 ↔ 브라우저 주석 실시간 양방향 통신 |
+| `agent-browser` | CLI 도구 + 스킬 | AI 에이전트 전용 브라우저 자동화 |
+
+### 사전 요구사항
+
+```bash
+# agent-browser CLI (전역 설치)
+npm install -g agent-browser
+agent-browser install  # Chromium 다운로드
+
+# MCP 서버 설정 — Claude Code (~/.claude/settings.json)
+# mcpServers에 아래 추가:
+# "agentation": { "command": "npx", "args": ["-y", "agentation-mcp", "server"] }
+
+# MCP 서버 설정 — Codex CLI (~/.codex/config.toml)
+# [mcp_servers.agentation]
+# command = "npx"
+# args = ["-y", "agentation-mcp", "server"]
+```
+
+### 사용법 1: 프로젝트 세팅 (1회)
+
+프로젝트에 Agentation 툴바를 추가합니다. 한 번만 실행하면 됩니다.
+
+```
+# Claude Code
+/agentation
+
+# Codex CLI
+$agentation
+```
+
+스킬이 자동으로:
+1. `pnpm add agentation -D` (또는 프로젝트의 패키지 매니저)
+2. `app/layout.tsx`에 `<Agentation />` 컴포넌트 추가 (dev 환경 only)
+
+### 사용법 2: 수동 피드백 (사람이 직접)
+
+세팅 후 브라우저에서 개발 서버를 열면 Agentation 툴바가 나타납니다.
+
+```
+1. UI 요소 위에 마우스 올리고 클릭
+2. "이 버튼 색상 바꿔줘" 같은 피드백 작성
+3. "Copy" 버튼 → 마크다운 복사 → AI 에이전트에 붙여넣기
+```
+
+복사된 내용에는 CSS 선택자, React 컴포넌트명, 계산된 스타일이 포함되어 에이전트가 정확한 위치를 바로 파악합니다.
+
+**MCP 연결 시** 복사-붙여넣기 없이 에이전트에게 직접 요청:
+```
+주석 확인해서 수정해줘
+```
+
+### 사용법 3: AI 자율 디자인 리뷰
+
+AI가 headed 브라우저를 열고, 마우스를 직접 움직이며 페이지를 순회하고 디자인 비평을 남깁니다. 사용자는 실시간으로 구경할 수 있습니다.
+
+```
+# 기본 사용
+/agentation-self-driving
+localhost:3000 페이지 디자인 리뷰해줘
+
+# 특정 페이지 + 관점 지정
+/agentation-self-driving
+localhost:3000/blog/my-post 타이포그래피랑 간격 위주로 비평해줘
+
+# 특정 영역 집중
+/agentation-self-driving
+홈페이지 히어로 섹션이랑 CTA 배치 검토해줘
+```
+
+AI가 남기는 비평 예시:
+
+| 대상 | 주석 내용 |
+|------|-----------|
+| 히어로 헤드라인 | "h1과 서브헤딩 사이 간격이 8px로 너무 좁다. 16-24px로 늘리면 시각적 계층이 명확해진다." |
+| 블로그 카드 | "카드 간 간격이 불규칙하다. gap: 24px로 통일하고, 호버 시 subtle shadow 추가 권장." |
+| CTA 버튼 | "버튼이 주변 텍스트와 시각적 가중치가 비슷하다. 배경색 대비를 높이고 padding 확대." |
+
+### 사용법 4: 풀 자율 모드 (2세션)
+
+**터미널 2개**를 열어 리뷰 + 코드 수정을 동시에 실행합니다.
+
+**세션 1 — 디자인 비평:**
+```
+/agentation-self-driving
+localhost:3000 전체 페이지 디자인 리뷰해줘
+```
+
+**세션 2 — 코드 자동 수정:**
+```
+agentation 주석 감시하면서 들어오는 피드백 자동으로 코드에 반영해줘
+```
+
+세션1이 브라우저에서 주석을 남기면, 세션2가 MCP를 통해 실시간으로 받아서 코드를 수정합니다.
+
+### 호환 플랫폼
+
+| 기능 | Claude Code | Codex CLI | Cursor | 기타 |
+|------|------------|-----------|--------|------|
+| `/agentation` 스킬 | `/agentation` | `$agentation` | 자동 감지 | Agent Skills 표준 지원 도구 |
+| MCP 연동 | settings.json | config.toml | 설정 필요 | MCP 지원 도구 |
+| `agent-browser` | 지원 | 지원 | 지원 | 대부분 지원 |
+
+### 참고 링크
+
+- [Agentation 공식 사이트](https://agentation.dev)
+- [Agentation 설치 가이드](https://agentation.dev/install)
+- [agent-browser GitHub](https://github.com/vercel-labs/agent-browser)
+- [Agent Skills Standard](https://agentskills.io)
 
 ## 백업
 
