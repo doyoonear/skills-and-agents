@@ -1,6 +1,17 @@
 {
-  "description": "Auto-run install.sh when skills are created or modified",
+  "description": "Auto-run install.sh on skill changes, intercept direct npx skills add",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/intercept-skills-add.sh\""
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write",
