@@ -1,0 +1,5 @@
+{
+  "name": "skill-sync",
+  "version": "1.0.0",
+  "description": "Auto-run install.sh when skills are created or modified in skills-and-agents"
+}

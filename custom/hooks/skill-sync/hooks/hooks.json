@@ -1,0 +1,25 @@
+{
+  "description": "Auto-run install.sh when skills are created or modified",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/auto-install.sh\" write"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/auto-install.sh\" edit"
+          }
+        ]
+      }
+    ]
+  }
+}
