@@ -2,7 +2,7 @@
 name: ui-css-patterns
 description: |
   CSS patterns for UI animation, pseudo-elements, and view transitions. Covers ::before/::after decorative patterns, hit target expansion, button hover effects, native pseudo-element styling, and the View Transitions API.
-  Use when implementing CSS pseudo-elements, hover effects, hit target expansion, view transitions, or styling native elements like ::backdrop, ::placeholder, ::selection, or when user mentions "CSS 패턴", "가상 요소", "hover 효과", "view transition", "뷰 전환".
+  This skill should be used when implementing CSS pseudo-elements, hover effects, hit target expansion, view transitions, or styling native elements like ::backdrop, ::placeholder, ::selection, or when user mentions "CSS 패턴", "가상 요소", "hover 효과", "view transition", "뷰 전환".
   Not for JavaScript-driven animations (use ui-motion-guide) or sound design (use ui-sound-design).
 ---
 

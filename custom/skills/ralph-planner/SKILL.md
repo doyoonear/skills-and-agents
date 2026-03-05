@@ -2,7 +2,7 @@
 name: ralph-planner
 description: |
   Ralph 기반 프로젝트 플래닝 및 자동 반복 실행 시스템. Stop Hook으로 Phase별 자동 진행, HANDOFF.md로 맥락 보존.
-  Use when user wants Ralph-powered planning and execution, or mentions "ralph", "랄프", "/ralph", "ralph feature/bugfix/refactor".
+  This skill should be used when the user wants Ralph-powered planning and execution, or mentions "ralph", "랄프", "/ralph", "ralph feature/bugfix/refactor".
   Not for simple one-off tasks or manual step-by-step planning.
 ---
 

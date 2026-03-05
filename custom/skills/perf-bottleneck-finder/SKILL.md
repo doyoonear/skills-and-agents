@@ -4,7 +4,7 @@ description: |
   웹 애플리케이션의 성능 병목 지점을 탐색하고 구간별 측정을 수행하는 스킬.
   Playwright 자동 측정, DevTools 분석 가이드, 서버/DB 프로파일링을 포함하여
   프론트엔드부터 백엔드까지 전 구간의 병목을 정량적으로 식별합니다.
-  Use when finding performance bottlenecks, profiling page load, measuring API response time,
+  This skill should be used when finding performance bottlenecks, profiling page load, measuring API response time,
   or when delegated from performance-improve-process skill.
   Not for general performance optimization process — use performance-improve-process for that.
 ---

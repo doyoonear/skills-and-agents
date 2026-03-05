@@ -4,7 +4,7 @@ description: |
   성능 개선 전체 프로세스 오케스트레이션. Code Complete 2 원칙 기반으로
   측정 → 병목 식별 → 한 번에 하나씩 변경 → 재측정 → 롤백/유지 판단 사이클을 수행합니다.
   병목 탐색과 측정은 perf-bottleneck-finder 스킬에 위임합니다.
-  Use when user mentions "성능 개선", "느리다", "최적화", "performance", "slow", "optimize",
+  This skill should be used when the user mentions "성능 개선", "느리다", "최적화", "performance", "slow", "optimize",
   "로딩이 오래 걸린다", "속도 개선", "렌더링이 느려", or any performance improvement request.
   Not for initial profiling only — use perf-bottleneck-finder directly for that.
 ---

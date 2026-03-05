@@ -1,6 +1,10 @@
 ---
 name: modern-python
-description: Configures Python projects with modern tooling (uv, ruff, ty). Use when creating projects, writing standalone scripts, or migrating from pip/Poetry/mypy/black.
+description: |
+  Guide for configuring Python projects with modern tooling including uv, ruff, and ty.
+  This skill should be used when creating new Python projects, writing standalone scripts,
+  migrating from pip/Poetry/mypy/black, or when the user mentions "uv", "ruff", "ty", "modern python", "파이썬 프로젝트 세팅".
+  Not for general Python programming or data science workflows.
 ---
 
 # Modern Python

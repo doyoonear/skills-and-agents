@@ -2,7 +2,7 @@
 name: supabase-database-guide
 description: |
   Supabase 데이터베이스 개발 가이드. Migration 작성, 로컬/원격 환경 관리, RLS 정책 설정.
-  Use when writing Supabase migrations, managing DB schemas, configuring RLS policies, or setting up local/remote environments, or when user mentions "supabase migration", "DB 스키마", "테이블 추가", "RLS 정책".
+  This skill should be used when writing Supabase migrations, managing DB schemas, configuring RLS policies, or setting up local/remote environments, or when user mentions "supabase migration", "DB 스키마", "테이블 추가", "RLS 정책".
   Not for Supabase Auth, Storage, or Edge Functions.
 ---
 

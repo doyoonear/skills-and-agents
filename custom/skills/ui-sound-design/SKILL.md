@@ -2,7 +2,7 @@
 name: ui-sound-design
 description: |
   UI sound design principles and implementation for web and mobile applications. Covers when to use sound, accessibility requirements, Web Audio API synthesis, and parameter tuning.
-  Use when implementing sound feedback, adding audio cues, designing notification/confirmation/error sounds, reviewing sound accessibility, or when user mentions "UI 사운드", "소리 디자인", "오디오 피드백", "효과음", "Web Audio API".
+  This skill should be used when implementing sound feedback, adding audio cues, designing notification/confirmation/error sounds, reviewing sound accessibility, or when user mentions "UI 사운드", "소리 디자인", "오디오 피드백", "효과음", "Web Audio API".
   Not for visual animations (use ui-motion-guide) or background music/media playback.
 ---
 

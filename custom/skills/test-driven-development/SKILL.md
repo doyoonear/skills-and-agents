@@ -1,6 +1,10 @@
 ---
 name: test-driven-development
-description: Use when implementing any feature or bugfix, before writing implementation code
+description: |
+  Strict TDD methodology enforcing the Iron Law: no production code without a failing test first.
+  This skill should be used when implementing features or bug fixes with strict test-first discipline,
+  or when the user mentions "TDD", "test first", "iron law", "RED-GREEN-REFACTOR".
+  Not for writing tests after implementation (use testing-principles) or E2E testing.
 ---
 
 # Test-Driven Development (TDD)

@@ -2,7 +2,7 @@
 name: supabase-troubleshooting
 description: |
   Supabase 에러 해결 가이드. Storage RLS, DB 제약조건, Migration 에러 등 문제 진단 및 해결.
-  Use when troubleshooting Supabase errors including RLS failures, migration errors, NOT NULL violations, or Storage upload failures, or when user mentions "supabase 에러", "RLS 에러", "migration 실패".
+  This skill should be used when troubleshooting Supabase errors including RLS failures, migration errors, NOT NULL violations, or Storage upload failures, or when user mentions "supabase 에러", "RLS 에러", "migration 실패".
   Not for initial Supabase setup or feature implementation.
 ---
 

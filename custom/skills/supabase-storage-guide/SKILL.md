@@ -2,7 +2,7 @@
 name: supabase-storage-guide
 description: |
   Supabase Storage 가이드. 이미지 업로드, Signed URL, 버킷 관리, Storage RLS 정책 설정.
-  Use when uploading files to Supabase Storage, configuring buckets, generating signed URLs, or setting Storage RLS policies, or when user mentions "수파베이스 스토리지", "이미지 업로드", "Storage 버킷", "Signed URL".
+  This skill should be used when uploading files to Supabase Storage, configuring buckets, generating signed URLs, or setting Storage RLS policies, or when user mentions "수파베이스 스토리지", "이미지 업로드", "Storage 버킷", "Signed URL".
   Not for Supabase DB migrations or Auth configuration.
 ---
 

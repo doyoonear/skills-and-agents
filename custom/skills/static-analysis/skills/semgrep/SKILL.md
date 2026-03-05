@@ -1,11 +1,10 @@
 ---
 name: semgrep
-description: Run Semgrep static analysis for fast security scanning and pattern matching. Use when asked to scan code with Semgrep, write custom YAML rules, find vulnerabilities quickly, use taint mode, or set up Semgrep in CI/CD pipelines.
-allowed-tools:
-  - Bash
-  - Read
-  - Glob
-  - Grep
+description: |
+  Semgrep static analysis for fast security scanning and pattern-based code matching.
+  This skill should be used when scanning code with Semgrep, writing custom YAML rules,
+  finding vulnerabilities quickly, using taint mode, or setting up Semgrep in CI/CD pipelines.
+  Not for CodeQL-based analysis (use codeql skill) or SARIF result parsing (use sarif-parsing skill).
 ---
 
 # Semgrep Static Analysis

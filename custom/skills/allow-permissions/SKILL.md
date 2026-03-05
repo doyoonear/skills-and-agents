@@ -2,7 +2,7 @@
 name: allow-permissions
 description: |
   스크린샷/이미지에서 권한 요청 메시지를 분석하여 필요한 커맨드 권한을 전역 settings.json에 자동 추가.
-  Use when adding command permissions from a screenshot, or when user mentions "권한 추가", "퍼미션 추가", "settings에 권한 추가", "커맨드 허용", "/allow-permissions".
+  This skill should be used when adding command permissions from a screenshot, or when user mentions "권한 추가", "퍼미션 추가", "settings에 권한 추가", "커맨드 허용", "/allow-permissions".
   Not for general settings configuration or non-permission changes.
 ---
 

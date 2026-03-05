@@ -1,12 +1,16 @@
 ---
 name: tdd-workflow
 description: |
+  [DEPRECATED - test-driven-development 스킬로 대체됨]
   테스트 주도 개발(TDD) 워크플로우. RED-GREEN-REFACTOR 사이클로 테스트 먼저 작성 후 구현.
-  Use when implementing features with TDD approach, or when user mentions "TDD", "테스트 먼저", "테스트 주도 개발", "RED-GREEN-REFACTOR", "/tdd".
+  This skill should be used when implementing features with TDD approach, or when the user mentions "TDD", "테스트 먼저", "테스트 주도 개발", "RED-GREEN-REFACTOR", "/tdd".
   Not for writing tests after implementation (use testing-principles) or E2E tests.
+  NOTE: Prefer the test-driven-development skill which provides a more comprehensive and strict TDD methodology.
 ---
 
-# TDD Workflow Skill
+# TDD Workflow Skill (Deprecated)
+
+> **이 스킬은 `test-driven-development` 스킬로 대체되었습니다.** 더 엄격하고 포괄적인 TDD 방법론을 원하면 `test-driven-development` 스킬을 사용하세요.
 
 테스트 주도 개발(Test-Driven Development) 방식으로 코드를 작성하는 skill입니다.
 

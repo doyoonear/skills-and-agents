@@ -2,7 +2,7 @@
 name: mece-writing
 description: |
   MECE(Mutually Exclusive, Collectively Exhaustive) 원칙으로 주제를 구조적으로 분석하고, 체계적인 글을 작성하여 파일로 저장.
-  Use when structurally analyzing a topic, creating issue trees, or writing with MECE framework, or when user mentions "MECE", "구조적 분석", "이슈 트리", "피라미드 원칙", "체계적 정리".
+  This skill should be used when structurally analyzing a topic, creating issue trees, or writing with MECE framework, or when user mentions "MECE", "구조적 분석", "이슈 트리", "피라미드 원칙", "체계적 정리".
   Not for free-form creative writing or simple summarization.
 ---
 

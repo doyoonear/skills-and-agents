@@ -2,7 +2,7 @@
 name: handoff
 description: |
   세션 간 작업 인수인계 문서 생성 및 이어받기. 진행 상황, TODO, 주의사항을 주제별 문서로 정리.
-  Use when user mentions "/handoff", "핸드오프", "인수인계", "handoff", "작업 넘겨", "이어서 해줘".
+  This skill should be used when the user mentions "/handoff", "핸드오프", "인수인계", "handoff", "작업 넘겨", "이어서 해줘".
   Not for git commits or PR creation (use /wrap for that).
 ---
 

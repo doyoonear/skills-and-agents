@@ -2,48 +2,13 @@
 name: error-handling-system
 description: |
   React ErrorBoundary & Suspense 전역 처리 시스템. 에러 경계, 로딩 스켈레톤, 전역 에러 핸들링 구현.
-  Use when setting up global error handling with ErrorBoundary, implementing Suspense with skeleton loading, or when user mentions "에러 시스템", "에러바운더리", "ErrorBoundary", "Suspense", "스켈레톤 로딩".
+  This skill should be used when setting up global error handling with ErrorBoundary, implementing Suspense with skeleton loading, or when user mentions "에러 시스템", "에러바운더리", "ErrorBoundary", "Suspense", "스켈레톤 로딩".
   Not for try-catch error handling in server-side code or API error responses.
 ---
 
 # React ErrorBoundary & Suspense 전역 처리 시스템
 
-## 🎯 Skills 트리거 키워드
-
-이 Skills는 다음 표현 중 **하나라도 사용하면 자동으로 적용**됩니다:
-
-### 에러 처리 관련
-- "에러시스템 적용"
-- "에러 시스템 적용"
-- "전역 에러 처리 적용"
-- "전역 에러처리"
-- "에러바운더리 적용"
-- "에러 바운더리 적용"
-- "ErrorBoundary 적용"
-- "Error Boundary 적용"
-- "에러 핸들링 시스템"
-- "에러핸들링"
-
-### Suspense 관련
-- "서스펜스 적용"
-- "Suspense 적용"
-- "서스펜스 바운더리"
-- "Suspense boundary"
-
-### 로딩/스켈레톤 관련
-- "스켈레톤 로딩"
-- "skeleton 로딩"
-- "로딩 스켈레톤"
-- "스켈레톤 UI"
-- "로딩 fallback"
-
-### 통합 요청
-- "에러와 로딩 처리"
-- "전역 로딩 처리"
-
----
-
-## 📖 이 Skills가 제공하는 것
+## 이 스킬이 제공하는 것
 
 1. **React 18/19 ErrorBoundary 클래스 컴포넌트** 템플릿
 2. **세부 영역별 ErrorBoundary 배치 전략** (전역 / 페이지 / 컴포넌트 단위)

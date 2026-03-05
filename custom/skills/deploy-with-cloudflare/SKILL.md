@@ -2,7 +2,7 @@
 name: deploy-with-cloudflare
 description: |
   Deploy web applications to Cloudflare Workers and Pages. Specialized in TanStack Start (React SSR), Next.js, Vite, Astro, SvelteKit, and Remix deployments.
-  Use when user requests: "Cloudflare에 배포", "Cloudflare Workers 설정", "TanStack Start 배포", "Cloudflare Pages 배포", "배포 후 404 에러", "Wrangler 설정", "deploy to Cloudflare", "Cloudflare deployment", "Workers deployment", "SSR Cloudflare"
+  This skill should be used when the user requests: "Cloudflare에 배포", "Cloudflare Workers 설정", "TanStack Start 배포", "Cloudflare Pages 배포", "배포 후 404 에러", "Wrangler 설정", "deploy to Cloudflare", "Cloudflare deployment", "Workers deployment", "SSR Cloudflare"
   Handles SSR applications (Workers) and static sites (Pages). Troubleshoots 404 errors, build configuration issues, and Node.js compatibility problems.
 ---
 

@@ -2,7 +2,7 @@
 name: git-pr-workflow
 description: |
   Git 브랜치 생성부터 PR merge까지 전체 워크플로우 자동화. 변경사항 분석, 기능별 커밋 분리, rebase, PR 생성.
-  Use when creating pull requests, automating git workflow, or when user mentions "PR 올려줘", "PR 생성", "브랜치 만들고 PR", "/pr".
+  This skill should be used when creating pull requests, automating git workflow, or when user mentions "PR 올려줘", "PR 생성", "브랜치 만들고 PR", "/pr".
   Not for simple git commits or session wrap-up (use wrap skill instead).
 ---
 

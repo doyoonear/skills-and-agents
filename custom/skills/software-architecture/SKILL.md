@@ -2,7 +2,7 @@
 name: software-architecture
 description: |
   Quality-focused software architecture guide. Design patterns, system architecture, code organization, and architectural decisions.
-  Use when designing system architecture, making architectural decisions, or analyzing code structure for quality improvements.
+  This skill should be used when designing system architecture, making architectural decisions, or analyzing code structure for quality improvements.
   Not for UI component architecture (use component-architecture) or specific framework patterns.
 ---
 

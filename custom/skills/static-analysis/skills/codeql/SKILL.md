@@ -1,11 +1,10 @@
 ---
 name: codeql
-description: Run CodeQL static analysis for security vulnerability detection, taint tracking, and data flow analysis. Use when asked to analyze code with CodeQL, create CodeQL databases, write custom QL queries, perform security audits, or set up CodeQL in CI/CD pipelines.
-allowed-tools:
-  - Bash
-  - Read
-  - Glob
-  - Grep
+description: |
+  CodeQL static analysis for security vulnerability detection, taint tracking, and data flow analysis.
+  This skill should be used when analyzing code with CodeQL, creating CodeQL databases, writing custom QL queries,
+  performing security audits, or setting up CodeQL in CI/CD pipelines.
+  Not for Semgrep-based scanning (use semgrep skill) or SARIF result parsing (use sarif-parsing skill).
 ---
 
 # CodeQL Static Analysis

@@ -2,7 +2,7 @@
 name: component-architecture
 description: |
   React 컴포넌트 아키텍처 패턴 가이드. Provider 패턴, 계층 구조, Base/Extended 분리, 재사용 설계.
-  Use when designing component architecture, splitting base and extended components, implementing Provider patterns, or when user mentions "컴포넌트 아키텍처", "컴포넌트 설계", "컴포넌트 계층 구조".
+  This skill should be used when designing component architecture, splitting base and extended components, implementing Provider patterns, or when user mentions "컴포넌트 아키텍처", "컴포넌트 설계", "컴포넌트 계층 구조".
   Not for component styling (use CSS/Tailwind skills) or state management libraries.
 ---
 
