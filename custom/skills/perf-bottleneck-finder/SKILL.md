@@ -91,19 +91,29 @@ python scripts/measure_page_performance.py --url "http://localhost:3000/dashboar
 - JavaScript 실행 시간
 - 렌더링/페인팅 시간
 
-### MCP Playwright로 수동 측정 (스크립트 대안)
+### agent-browser로 수동 측정 (스크립트 대안)
 
-스크립트 실행이 어려운 경우 MCP Playwright 도구를 활용한다:
+스크립트 실행이 어려운 경우 agent-browser CLI를 활용한다:
 
-```
-1. browser_navigate: 대상 페이지로 이동
-2. browser_evaluate: Performance API로 타이밍 데이터 수집
-   → performance.getEntriesByType('navigation')
-   → performance.getEntriesByType('resource')
-   → performance.getEntriesByType('paint')
-3. browser_network_requests: API 요청 목록 + 타이밍 수집
-4. browser_console_messages: 에러/경고 확인
-5. browser_take_screenshot: 시각적 상태 기록
+```bash
+# 1. 대상 페이지로 이동 + 네트워크 안정화
+agent-browser open <url> && agent-browser wait --load networkidle
+
+# 2. Performance API로 타이밍 데이터 수집
+agent-browser eval --stdin <<'EVALEOF'
+JSON.stringify({
+  navigation: performance.getEntriesByType('navigation')[0],
+  paint: performance.getEntriesByType('paint'),
+  resources: performance.getEntriesByType('resource')
+    .filter(r => r.initiatorType === 'fetch' || r.initiatorType === 'xmlhttprequest')
+})
+EVALEOF
+
+# 3. 접근성 스냅샷으로 구조 확인
+agent-browser snapshot -i
+
+# 4. 시각적 상태 기록
+agent-browser screenshot
 ```
 
 **Performance API 측정 코드:**
