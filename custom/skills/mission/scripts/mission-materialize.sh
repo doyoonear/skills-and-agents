@@ -146,6 +146,11 @@ if [ -z "$SLUG" ]; then
   exit 1
 fi
 
+if ! echo "$SLUG" | grep -qE '^[a-z0-9]([a-z0-9-]*[a-z0-9])?$'; then
+  echo "Invalid slug: '$SLUG'" >&2
+  exit 1
+fi
+
 MISSION_DIR="docs/mission-${SLUG}"
 
 if [ ! -f "$MISSION_DIR/mission.json" ]; then

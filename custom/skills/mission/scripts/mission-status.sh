@@ -24,6 +24,8 @@ if [ -z "$SLUG" ]; then
     [ -d "$dir" ] || continue
     [ -f "$dir/mission.json" ] || continue
     slug_name=$(basename "$dir" | sed 's/^mission-//')
+    # 안전하지 않은 slug 건너뛰기
+    echo "$slug_name" | grep -qE '^[a-z0-9]([a-z0-9-]*[a-z0-9])?$' || continue
     MISSIONS="${MISSIONS}${slug_name}\n"
   done
 
@@ -46,6 +48,11 @@ if [ -z "$SLUG" ]; then
     echo "사용법: mission-status.sh <slug>"
     exit 0
   fi
+fi
+
+if ! echo "$SLUG" | grep -qE '^[a-z0-9]([a-z0-9-]*[a-z0-9])?$'; then
+  echo "Invalid slug: '$SLUG'" >&2
+  exit 1
 fi
 
 MISSION_DIR="docs/mission-${SLUG}"

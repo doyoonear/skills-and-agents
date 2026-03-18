@@ -30,6 +30,41 @@ if [ -z "$SLUG" ] || [ -z "$SESSION_ID" ] || [ -z "$EVENT_TYPE" ]; then
   exit 1
 fi
 
+# slug 유효성 검증
+if ! echo "$SLUG" | grep -qE '^[a-z0-9]([a-z0-9-]*[a-z0-9])?$'; then
+  echo "Invalid slug: '$SLUG'" >&2
+  exit 1
+fi
+
+# session ID 유효성 검증 (new/auto 제외)
+if [ "$SESSION_ID" != "new" ] && [ "$SESSION_ID" != "auto" ]; then
+  if ! echo "$SESSION_ID" | grep -qE '^[a-zA-Z0-9][a-zA-Z0-9._-]*$'; then
+    echo "Invalid session ID: '$SESSION_ID'" >&2
+    exit 1
+  fi
+fi
+
+# event type allowlist
+VALID_TYPES="session.started session.ended task.claimed task.progress task.heartbeat task.done task.released task.blocked task.unblocked mission.compact mission.snapshot"
+if ! echo " $VALID_TYPES " | grep -q " $EVENT_TYPE "; then
+  echo "Unknown event type: '$EVENT_TYPE'" >&2
+  exit 1
+fi
+
+# task ID 유효성 검증
+if [ -n "$TASK_ID" ]; then
+  if ! echo "$TASK_ID" | grep -qE '^[A-Za-z0-9_-]+$'; then
+    echo "Invalid task ID: '$TASK_ID'" >&2
+    exit 1
+  fi
+fi
+
+# payload 크기 제한 (10KB)
+if [ "${#PAYLOAD_JSON}" -gt 10240 ]; then
+  echo "Payload too large: ${#PAYLOAD_JSON} bytes (max 10240)" >&2
+  exit 1
+fi
+
 MISSION_DIR="docs/mission-${SLUG}"
 
 if [ ! -d "$MISSION_DIR" ]; then
@@ -110,39 +145,34 @@ if ! echo "$PAYLOAD_JSON" | jq empty 2>/dev/null; then
   exit 1
 fi
 
-# taskId: 비어있으면 null
-TASK_ID_JSON="null"
+# taskId/causedBy를 jq로 안전하게 처리
 if [ -n "$TASK_ID" ]; then
-  TASK_ID_JSON="\"$TASK_ID\""
+  TASK_ID_JQ="--arg taskId $TASK_ID"
+else
+  TASK_ID_JQ=""
 fi
 
-# causedBy: 비어있으면 null
-CAUSED_BY_JSON="null"
-if [ -n "$CAUSED_BY" ]; then
-  CAUSED_BY_JSON="\"$CAUSED_BY\""
-fi
-
-# 이벤트 JSON 생성 (한 줄)
+# 이벤트 JSON 생성 (한 줄) — 모든 값을 jq --arg로 안전하게 전달
 EVENT=$(jq -c -n \
   --arg id "$EVENT_ID" \
   --arg ts "$TS" \
   --arg missionId "$MISSION_ID" \
-  --argjson taskId "$TASK_ID_JSON" \
   --arg sessionId "$SESSION_ID" \
   --arg type "$EVENT_TYPE" \
   --argjson seq "$SEQ" \
   --argjson payload "$PAYLOAD_JSON" \
-  --argjson causedBy "$CAUSED_BY_JSON" \
+  --arg taskIdRaw "$TASK_ID" \
+  --arg causedByRaw "$CAUSED_BY" \
   '{
     id: $id,
     ts: $ts,
     missionId: $missionId,
-    taskId: $taskId,
+    taskId: (if $taskIdRaw == "" then null else $taskIdRaw end),
     sessionId: $sessionId,
     type: $type,
     seq: $seq,
     payload: $payload,
-    causedBy: $causedBy
+    causedBy: (if $causedByRaw == "" then null else $causedByRaw end)
   }')
 
 # JSONL append
