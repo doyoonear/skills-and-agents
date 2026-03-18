@@ -10,7 +10,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if ! command -v jq &>/dev/null; then
+if ! command -v jq >/dev/null 2>&1; then
   echo "jq가 필요합니다: brew install jq" >&2
   exit 1
 fi
@@ -19,35 +19,42 @@ SLUG="${1:-}"
 
 if [ -z "$SLUG" ]; then
   # slug 미지정 시 활성 미션 탐색
-  MISSIONS=""
+  MISSIONS_TMP=$(mktemp)
+  trap "rm -f '$MISSIONS_TMP'" EXIT
   for dir in docs/mission-*/; do
     [ -d "$dir" ] || continue
     [ -f "$dir/mission.json" ] || continue
     slug_name=$(basename "$dir" | sed 's/^mission-//')
-    # 안전하지 않은 slug 건너뛰기
     echo "$slug_name" | grep -qE '^[a-z0-9]([a-z0-9-]*[a-z0-9])?$' || continue
-    MISSIONS="${MISSIONS}${slug_name}\n"
+    echo "$slug_name" >> "$MISSIONS_TMP"
   done
 
-  if [ -z "$MISSIONS" ]; then
+  MISSION_COUNT=0
+  if [ -s "$MISSIONS_TMP" ]; then
+    MISSION_COUNT=$(wc -l < "$MISSIONS_TMP" | tr -d ' ')
+  fi
+
+  if [ "$MISSION_COUNT" -eq 0 ]; then
     echo "활성 미션이 없습니다."
+    rm -f "$MISSIONS_TMP"
     exit 0
   fi
 
-  MISSION_COUNT=$(echo -e "$MISSIONS" | grep -c .)
   if [ "$MISSION_COUNT" -eq 1 ]; then
-    SLUG=$(echo -e "$MISSIONS" | head -1)
+    SLUG=$(head -1 "$MISSIONS_TMP")
   else
     echo "활성 미션 목록:"
-    echo -e "$MISSIONS" | while read -r m; do
+    while read -r m; do
       [ -z "$m" ] && continue
       title=$(jq -r '.title' "docs/mission-${m}/mission.json")
       echo "  - $m: $title"
-    done
+    done < "$MISSIONS_TMP"
     echo ""
     echo "사용법: mission-status.sh <slug>"
+    rm -f "$MISSIONS_TMP"
     exit 0
   fi
+  rm -f "$MISSIONS_TMP"
 fi
 
 if ! echo "$SLUG" | grep -qE '^[a-z0-9]([a-z0-9-]*[a-z0-9])?$'; then

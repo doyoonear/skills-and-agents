@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-if ! command -v jq &>/dev/null; then
+if ! command -v jq >/dev/null 2>&1; then
   echo "jq가 필요합니다: brew install jq" >&2
   exit 1
 fi
@@ -82,19 +82,9 @@ generate_dashboard() {
       echo "|------|----------|------------|"
       echo "$state" | jq -r '
         .activeSessions[] |
-        (.sessionId) as $sid |
-        (
-          [.] | . as $sessions |
-          [$sessions[0]] | . as $s |
-          (input_line_number // 0) | . as $dummy |
-          $sid
-        ) as $lookup_sid |
-        (.lastActivity // "-") | if . != "-" then (split("T")[0] + " " + (split("T")[1] | split("+")[0] | split(".")[0] | .[0:5])) else "-" end |
-        . as $time |
-        "| \(.sessionLabel // $sid) (\($sid)) | - | \($time) |"
-      ' 2>/dev/null || echo "$state" | jq -r '
-        .activeSessions[] |
-        "| \(.sessionLabel) (\(.sessionId)) | - | \(.lastActivity // "-") |"
+        (.lastActivity // "-") as $raw_time |
+        ($raw_time | if . != "-" then (split("T")[0] + " " + (split("T")[1] | split("+")[0] | split(".")[0] | .[0:5])) else "-" end) as $time |
+        "| \(.sessionLabel // .sessionId) (\(.sessionId)) | - | \($time) |"
       '
     fi
 
@@ -196,10 +186,7 @@ if [ -d "$EVENTS_DIR" ]; then
   done
 fi
 
-# 이벤트가 없으면 빈 배열로 처리
-if [ ! -s "$EVENTS_TMP" ]; then
-  echo '[]' > "$EVENTS_TMP"
-fi
+# 이벤트가 없으면 빈 파일 유지 (jq -s가 빈 파일에서 []를 생성)
 
 # ---- 2. 스냅샷 기반 시작점 결정 ----
 
@@ -234,20 +221,21 @@ else
   STALE_THRESHOLD=$(date -u -d "-${STALE_TIMEOUT} seconds" '+%Y-%m-%dT%H:%M:%S+00:00')
 fi
 
+# 이벤트를 JSON 배열로 변환 (빈 파일 → [])
+EVENTS_ARRAY="[]"
+if [ -s "$EVENTS_TMP" ]; then
+  EVENTS_ARRAY=$(jq -s '.' "$EVENTS_TMP")
+fi
+
 STATE_JSON=$(jq -n \
   --argjson mission "$MISSION_JSON" \
-  --slurpfile events "$EVENTS_TMP" \
+  --argjson events "$EVENTS_ARRAY" \
   --arg now "$NOW" \
   --arg staleThreshold "$STALE_THRESHOLD" \
   --argjson snapshotBase "$SNAPSHOT_BASE" \
   '
-  # Handle empty events (file contains just [])
-  (if ($events | length) == 1 and ($events[0] | type) == "array"
-   then []
-   else $events end) as $raw_events |
-
   # Sort events globally: ts -> sessionId -> seq
-  ($raw_events | sort_by([.ts, .sessionId, .seq])) as $sorted |
+  ($events | sort_by([.ts, .sessionId, .seq])) as $sorted |
 
   # Deduplicate by event id
   ($sorted | unique_by(.id)) as $unique_events |

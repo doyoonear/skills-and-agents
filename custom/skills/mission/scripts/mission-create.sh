@@ -9,7 +9,7 @@
 
 set -euo pipefail
 
-if ! command -v jq &>/dev/null; then
+if ! command -v jq >/dev/null 2>&1; then
   echo "jq가 필요합니다: brew install jq" >&2
   exit 1
 fi

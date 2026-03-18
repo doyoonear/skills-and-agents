@@ -12,7 +12,6 @@
 | `type` | string | yes | 이벤트 타입 |
 | `seq` | number | yes | 세션 내 순서 번호 (monotonic) |
 | `payload` | object | yes | 이벤트별 추가 데이터 |
-| `causedBy` | string? | no | 선행 이벤트 ID (인과 추적) |
 
 ## 이벤트 타입별 스키마
 

@@ -10,7 +10,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if ! command -v jq &>/dev/null; then
+if ! command -v jq >/dev/null 2>&1; then
   echo "jq가 필요합니다: brew install jq" >&2
   exit 1
 fi
@@ -82,14 +82,13 @@ DONE_TASK_IDS=$(echo "$STATE" | jq -c '[.tasks | to_entries[] | select(.value.st
 "$SCRIPT_DIR/mission-materialize.sh" "$SLUG" >/dev/null 2>&1 || true
 
 mkdir -p "$MISSION_DIR/snapshots"
-SNAP_NAME="state-$(date '+%Y%m%d-%H%M').json"
+SNAP_NAME="state-$(date '+%Y%m%d-%H%M%S').json"
 cp "$MISSION_DIR/state.json" "$MISSION_DIR/snapshots/${SNAP_NAME}"
 
-# 4. mission.snapshot 이벤트 발행
+# 4. mission.snapshot 이벤트 발행 + 최종 materializer 1회만 실행
 "$SCRIPT_DIR/mission-event.sh" "$SLUG" "$SESSION_ID" mission.snapshot "" \
   "{\"path\":\"snapshots/${SNAP_NAME}\"}"
 
-# 5. 최종 Materializer 재실행 (DASHBOARD.md 갱신)
 "$SCRIPT_DIR/mission-materialize.sh" "$SLUG" >/dev/null 2>&1 || true
 
 echo "Compaction complete:"

@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-if ! command -v jq &>/dev/null; then
+if ! command -v jq >/dev/null 2>&1; then
   echo "jq가 필요합니다: brew install jq" >&2
   exit 1
 fi
@@ -23,10 +23,9 @@ SESSION_ID="${2:-}"
 EVENT_TYPE="${3:-}"
 TASK_ID="${4:-}"
 PAYLOAD_JSON="${5-"{}"}"
-CAUSED_BY="${6:-}"
 
 if [ -z "$SLUG" ] || [ -z "$SESSION_ID" ] || [ -z "$EVENT_TYPE" ]; then
-  echo "Usage: mission-event.sh <mission-slug> <session-id|new|auto> <event-type> [task-id] [payload-json] [caused-by]" >&2
+  echo "Usage: mission-event.sh <mission-slug> <session-id|new|auto> <event-type> [task-id] [payload-json]" >&2
   exit 1
 fi
 
@@ -145,13 +144,6 @@ if ! echo "$PAYLOAD_JSON" | jq empty 2>/dev/null; then
   exit 1
 fi
 
-# taskId/causedBy를 jq로 안전하게 처리
-if [ -n "$TASK_ID" ]; then
-  TASK_ID_JQ="--arg taskId $TASK_ID"
-else
-  TASK_ID_JQ=""
-fi
-
 # 이벤트 JSON 생성 (한 줄) — 모든 값을 jq --arg로 안전하게 전달
 EVENT=$(jq -c -n \
   --arg id "$EVENT_ID" \
@@ -162,7 +154,6 @@ EVENT=$(jq -c -n \
   --argjson seq "$SEQ" \
   --argjson payload "$PAYLOAD_JSON" \
   --arg taskIdRaw "$TASK_ID" \
-  --arg causedByRaw "$CAUSED_BY" \
   '{
     id: $id,
     ts: $ts,
@@ -171,8 +162,7 @@ EVENT=$(jq -c -n \
     sessionId: $sessionId,
     type: $type,
     seq: $seq,
-    payload: $payload,
-    causedBy: (if $causedByRaw == "" then null else $causedByRaw end)
+    payload: $payload
   }')
 
 # JSONL append
