@@ -19,6 +19,17 @@ echo "🔄 Syncing skills and agents..."
 mkdir -p "$CLAUDE_SKILLS" "$CLAUDE_AGENTS" "$AGENTS_SKILLS"
 mkdir -p "$CUSTOM_SKILLS" "$CUSTOM_AGENTS" "$EXTERNAL_SKILLS" "$EXTERNAL_AGENTS" "$CUSTOM_HOOKS"
 
+# 스킬 디렉토리가 유효한지 검증 (SKILL.md 또는 plugin.json 또는 하위 SKILL.md 존재)
+is_valid_skill() {
+  local dir="$1"
+  [ -f "$dir/SKILL.md" ] && return 0
+  [ -f "$dir/.claude-plugin/plugin.json" ] && return 0
+  # 하위 폴더에 SKILL.md가 있는 멀티스킬 래퍼
+  find "$dir" -maxdepth 3 -name "SKILL.md" -print -quit 2>/dev/null | grep -q . && return 0
+  # .md 단일 파일 스킬 (디렉토리가 아닌 경우)
+  return 1
+}
+
 # 기존 skills-and-agents 관련 symlink 정리
 echo "📦 Cleaning old symlinks..."
 for link in "$CLAUDE_SKILLS"/* "$CLAUDE_AGENTS"/* "$AGENTS_SKILLS"/*; do
@@ -35,6 +46,12 @@ echo "🔗 Linking custom skills..."
 for skill in "$CUSTOM_SKILLS"/*; do
   [ -e "$skill" ] || continue
   name=$(basename "$skill")
+
+  # 유효성 검사: 빈 디렉토리 스킵
+  if [ -d "$skill" ] && ! is_valid_skill "$skill"; then
+    echo "  ⚠️  Skipped (no SKILL.md or plugin.json): $name"
+    continue
+  fi
 
   # ~/.claude/skills에 symlink
   target="$CLAUDE_SKILLS/$name"
@@ -56,6 +73,12 @@ echo "🔗 Linking external skills..."
 for skill in "$EXTERNAL_SKILLS"/*; do
   [ -e "$skill" ] || continue
   name=$(basename "$skill")
+
+  # 유효성 검사: 빈 디렉토리 스킵
+  if [ -d "$skill" ] && ! is_valid_skill "$skill"; then
+    echo "  ⚠️  Skipped (no SKILL.md or plugin.json): $name"
+    continue
+  fi
 
   # ~/.claude/skills에 symlink
   target="$CLAUDE_SKILLS/$name"
@@ -118,6 +141,27 @@ for hook in "$CUSTOM_HOOKS"/*; do
     echo "  ✅ Linked to .agents/skills: $name"
   fi
 done
+
+# 무결성 검증: 깨진 symlink 탐지 및 제거
+echo ""
+echo "🔍 Verifying symlink integrity..."
+broken_count=0
+for dir in "$CLAUDE_SKILLS" "$CLAUDE_AGENTS" "$AGENTS_SKILLS"; do
+  for link in "$dir"/*; do
+    [ -L "$link" ] || continue
+    if [ ! -e "$link" ]; then
+      name=$(basename "$link")
+      echo "  🗑️  Removing broken symlink: $name (in $(basename $(dirname $link)))"
+      rm "$link"
+      broken_count=$((broken_count + 1))
+    fi
+  done
+done
+if [ "$broken_count" -eq 0 ]; then
+  echo "  ✅ All symlinks valid"
+else
+  echo "  ⚠️  Removed $broken_count broken symlink(s)"
+fi
 
 echo ""
 echo "✨ Done!"
