@@ -26,19 +26,10 @@ description: |
 
 ### 1단계: 사전 검증
 
-```bash
-# Git 저장소인지 확인
-git rev-parse --git-dir
-
-# gh CLI 인증 확인
-gh auth status
-
-# 현재 브랜치 확인
-git branch --show-current
-
-# 변경사항 존재 확인
-git status --porcelain
-```
+- Git 저장소 확인: !`git rev-parse --git-dir`
+- gh CLI 인증: !`gh auth status`
+- 현재 브랜치: !`git branch --show-current`
+- 변경사항 확인: !`git status --porcelain`
 
 **검증 실패 시:**
 - Git 저장소가 아니면: 에러 메시지 출력 후 종료
@@ -47,14 +38,9 @@ git status --porcelain
 
 ### 2단계: 변경사항 분석
 
-```bash
-# staged + unstaged 변경사항
-git status --porcelain
-
-# 변경 내용 확인
-git diff
-git diff --cached
-```
+- Staged/unstaged 변경사항: !`git status --porcelain`
+- 변경 내용: !`git diff`
+- Cached 변경사항: !`git diff --cached`
 
 **분석 내용:**
 - 변경된 파일 목록 수집

@@ -35,14 +35,12 @@ description: |
 
 ### 2. 자동 정보 수집
 
-다음 git 명령어를 **병렬로** 실행하여 프로젝트 상태를 수집한다:
+다음 정보를 수집한다:
 
-```bash
-git branch --show-current
-git status --short
-git diff --stat
-git log --oneline -10
-```
+- 현재 브랜치: !`git branch --show-current`
+- 변경 상태: !`git status --short`
+- 변경 통계: !`git diff --stat`
+- 최근 커밋: !`git log --oneline -10`
 
 ### 3. 컨텍스트 분석
 
@@ -82,9 +80,7 @@ git log --oneline -10
 
 ### 1. 핸드오프 문서 목록 확인
 
-```bash
-ls docs/handoff/
-```
+- 기존 문서: !`ls docs/handoff/`
 
 ### 2. 문서 읽기
 

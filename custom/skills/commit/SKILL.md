@@ -14,14 +14,10 @@ description: |
 
 ### 1. 변경사항 파악
 
-아래 명령을 **병렬** 실행:
-
-```bash
-git status
-git diff --stat
-git diff
-git log --oneline -5
-```
+- 현재 상태: !`git status`
+- 변경 통계: !`git diff --stat`
+- 변경 내용: !`git diff`
+- 최근 커밋: !`git log --oneline -5`
 
 - staged/unstaged/untracked 모두 파악
 - 변경 없으면 "커밋할 변경사항이 없습니다" 보고 후 종료

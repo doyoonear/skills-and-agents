@@ -14,12 +14,10 @@ description: |
 
 ### 1. 변경사항 분석
 
-```bash
-git status
-git diff --stat
-git diff
-git log --oneline -10
-```
+- 현재 상태: !`git status`
+- 변경 통계: !`git diff --stat`
+- 변경 내용: !`git diff`
+- 최근 커밋: !`git log --oneline -10`
 
 - staged/unstaged 변경사항과 untracked 파일을 모두 파악
 - 현재 브랜치명과 base 브랜치(main) 확인
