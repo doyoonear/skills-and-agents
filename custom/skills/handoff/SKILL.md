@@ -1,14 +1,16 @@
 ---
 name: handoff
 description: |
-  세션 간 작업 인수인계 문서 생성 및 이어받기. 진행 상황, TODO, 주의사항을 주제별 문서로 정리.
+  세션 간 작업 인수인계 문서 생성 및 이어받기. 진행 상황, TODO, 주의사항을 repo의 docs/handoff/에 주제별 문서로 정리.
   Use when user mentions "/handoff", "핸드오프", "인수인계", "handoff", "작업 넘겨", "이어서 해줘".
-  Not for git commits or PR creation (use /wrap for that).
+  Not for git commits or PR creation (use /wrap for that). Not for long-form planning (use docs-writing → obsidian-writing for plans).
 ---
 
 # Handoff - 세션 간 작업 인수인계
 
-현재 세션의 작업 상태를 `docs/handoff/` 폴더에 주제별 마크다운 문서로 정리하여, 다음 세션에서 이어받을 수 있게 한다.
+현재 세션의 작업 상태를 repo의 `docs/handoff/` 폴더에 주제별 마크다운 문서로 정리하여, 다음 세션에서 이어받을 수 있게 한다.
+
+핸드오프는 지식 노트나 계획 정본이 아니라 **작업 상태 전달 문서**다. Obsidian에 저장하지 않는다.
 
 ## 모드 판별
 
@@ -56,7 +58,9 @@ git log --oneline -10
 
 ### 4. 핸드오프 문서 작성
 
-`docs/handoff/` 디렉토리에 문서를 작성한다. 디렉토리가 없으면 생성.
+repo의 `docs/handoff/` 디렉토리에 문서를 작성한다. 디렉토리가 없으면 생성.
+
+Obsidian vault에는 handoff를 작성하지 않는다. 상세 plan이 필요하면 별도로 `docs-writing` → `obsidian-writing` 흐름을 사용한다.
 
 **템플릿:** `references/handoff-template.md` 참조
 
@@ -109,6 +113,8 @@ ls docs/handoff/
 
 ## 주의사항
 
-- 핸드오프 문서는 **커밋하지 않는다** (사용자가 원하면 별도로 커밋)
+- 핸드오프 문서는 repo-local 문서지만 기본적으로 **커밋하지 않는다** (사용자가 원하면 별도로 커밋)
 - `wrap` 스킬과 역할이 다름: `wrap`은 커밋/PR 생성, `handoff`는 세션 간 컨텍스트 전달
+- Obsidian은 handoff 저장소로 사용하지 않는다. Obsidian plan과 handoff를 중복 작성하지 않는다.
+- 구현 중 체크리스트는 Pi todo/session state로 관리하고, handoff에는 다음 세션이 꼭 알아야 할 상태만 요약한다.
 - 핸드오프 문서에는 민감 정보(API 키, 비밀번호 등)를 포함하지 않는다
