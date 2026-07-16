@@ -1,5 +1,6 @@
 ---
 name: mermaid-diagram-creator
+disable-model-invocation: true
 description: |
   최신 Mermaid 문법을 활용한 아키텍처 다이어그램 및 시스템 시각화 생성.
   Use when creating diagrams, flowcharts, sequence diagrams, architecture charts, or data flow visualizations with Mermaid, or when user mentions "머메이드", "다이어그램", "플로우차트", "시퀀스 다이어그램", "아키텍처 도표".

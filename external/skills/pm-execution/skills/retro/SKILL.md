@@ -1,5 +1,6 @@
 ---
 name: retro
+disable-model-invocation: true
 description: "Facilitate a structured sprint retrospective — what went well, what didn't, and prioritized action items with owners and deadlines. Use when running a retrospective, reflecting on a sprint, creating action items from team feedback, or learning how to run effective retros."
 ---
 

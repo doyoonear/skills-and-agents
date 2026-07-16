@@ -1,5 +1,6 @@
 ---
 name: tailored-resume-generator
+disable-model-invocation: true
 description: Analyzes job descriptions and generates tailored resumes that highlight relevant experience, skills, and achievements to maximize interview chances
 ---
 

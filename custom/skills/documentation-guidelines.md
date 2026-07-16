@@ -1,3 +1,9 @@
+---
+name: documentation-guidelines
+disable-model-invocation: true
+description: Deprecated documentation routing guide retained for explicit reference; use docs-writing for active documentation requests.
+---
+
 # Deprecated: 문서 작성 가이드
 
 이 문서는 더 이상 문서 작성 요청의 진입점으로 사용하지 않는다.

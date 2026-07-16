@@ -1,5 +1,6 @@
 ---
 name: connect-apps
+disable-model-invocation: true
 description: Connect Claude to external apps like Gmail, Slack, GitHub. Use this skill when the user wants to send emails, create issues, post messages, or take actions in external services.
 ---
 

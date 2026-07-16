@@ -1,11 +1,16 @@
+---
+name: use-funnel-react-router-guide
+disable-model-invocation: true
+description: Guide for using @use-funnel with React Router v6+, including transitions, overlays, and sub-funnels.
+---
+
 # @use-funnel React Router 가이드
 
 > **문서 범위**: React Router 환경에서의 @use-funnel 사용법
-> **기본 개념**: [use-funnel-nextjs-guide.md](./use-funnel-nextjs-guide.md) 참조
 
 ## 개요
 
-이 문서는 React Router (v6+) 환경에서 @use-funnel을 사용하는 방법을 다룹니다. 핵심 개념(Step, Context, History)과 고급 기능(Transition Event, Overlay, Sub-funnel)은 Next.js 가이드와 동일하므로 해당 문서를 참조하세요.
+이 문서는 React Router v6+ 환경에서 @use-funnel을 설정하고 라우팅, URL 상태, 뒤로가기와 함께 사용하는 방법을 다룹니다.
 
 ---
 
@@ -423,4 +428,3 @@ pnpm add @use-funnel/browser
 
 - [공식 문서](https://use-funnel.slash.page/ko/docs/overview)
 - [React Router v6 문서](https://reactrouter.com/en/main)
-- [use-funnel-nextjs-guide.md](./use-funnel-nextjs-guide.md) - 핵심 개념 및 고급 기능

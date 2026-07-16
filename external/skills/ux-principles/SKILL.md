@@ -1,5 +1,6 @@
 ---
 name: ux-principles
+disable-model-invocation: true
 description: User research, usability heuristics, user psychology, accessibility, inclusive design, user testing, and UX metrics
 category: design
 tags: [ux, user-research, usability, accessibility, design-thinking, user-testing]

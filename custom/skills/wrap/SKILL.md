@@ -1,5 +1,6 @@
 ---
 name: wrap
+disable-model-invocation: true
 description: |
   세션 작업 마무리 자동화. 변경사항을 기능 단위로 커밋 분리, PR 생성, 남은 작업 handoff까지 일괄 수행.
   Use when wrapping up a session, or when user mentions "/wrap", "정리해줘", "세션 마무리", "작업 정리", "wrap up", "마무리해줘".

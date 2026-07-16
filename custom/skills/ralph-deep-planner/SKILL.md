@@ -1,5 +1,6 @@
 ---
 name: ralph-deep-planner
+disable-model-invocation: true
 description: |
   Ralph + Compound Engineering 통합 플래너. /ce:plan으로 깊은 계획 수립, Stop Hook 기반 Phase별 자동 반복 실행,
   조건부 /ce:compound 학습 기록, 완료 후 /ce:review 자동 실행.

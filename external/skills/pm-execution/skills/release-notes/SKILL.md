@@ -1,5 +1,6 @@
 ---
 name: release-notes
+disable-model-invocation: true
 description: "Generate user-facing release notes from tickets, PRDs, or changelogs. Creates clear, engaging summaries organized by category (new features, improvements, fixes). Use when writing release notes, creating changelogs, announcing product updates, or summarizing what shipped."
 ---
 

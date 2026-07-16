@@ -1,5 +1,6 @@
 ---
 name: swot-analysis
+disable-model-invocation: true
 description: "Perform a detailed SWOT analysis — strengths, weaknesses, opportunities, and threats with actionable recommendations. Use when doing strategic assessment, competitive analysis, or evaluating a product or business position."
 ---
 # SWOT Analysis

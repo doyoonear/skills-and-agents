@@ -1,5 +1,6 @@
 ---
 name: react-refactoring
+disable-model-invocation: true
 description: |
   React 컴포넌트 코드 분석 및 리팩토링. 코드 품질 개선, 클린 코드 변환, URL 상태 리팩토링, CSS/반응형 리팩토링, 최적화 수행.
   Use when refactoring React components, improving code quality, URL 상태 리팩토링, searchParams 리팩토링, useState를 URL로, TanStack Query queryKey 개선, loaderDeps 개선, CSS 브레이크포인트 리팩토링, container query 전환, responsive layout 개선, or when user mentions "리팩토링", "코드 개선", "코드 정리", "코드 최적화", "반응형 개선", "브레이크포인트 줄이기", "refactor".

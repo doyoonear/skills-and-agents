@@ -1,3 +1,9 @@
+---
+name: frontend-code-principles
+disable-model-invocation: true
+description: Reference guide for writing maintainable frontend code with readability, predictability, cohesion, and low coupling.
+---
+
 # 프론트엔드 코드 작성 원칙
 
 > 이 문서는 [Frontend Fundamentals](https://frontend-fundamentals.com/code-quality/code/)의 원칙을 기반으로,

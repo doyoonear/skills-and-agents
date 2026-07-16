@@ -1,5 +1,6 @@
 ---
 name: stakeholder-map
+disable-model-invocation: true
 description: "Build a stakeholder map using a power/interest grid, identify communication strategies per quadrant, and generate a communication plan. Use when managing stakeholders, preparing for a launch, aligning cross-functional teams, or planning stakeholder engagement."
 ---
 

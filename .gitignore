@@ -5,5 +5,6 @@
 backup/
 __pycache__/
 
-# Claude configuration
+# Agent runtime artifacts
 .claude/
+.pi-subagents/

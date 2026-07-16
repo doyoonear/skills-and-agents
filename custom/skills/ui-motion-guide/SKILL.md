@@ -1,5 +1,6 @@
 ---
 name: ui-motion-guide
+disable-model-invocation: true
 description: |
   UI motion and animation principles guide for web/app interfaces. Covers spring vs easing decision framework, timing/physics rules, AnimatePresence exit patterns, morphing icons, and container bound animations.
   Use when implementing or reviewing animations, transitions, motion design, or when user mentions "애니메이션", "모션", "spring", "easing", "AnimatePresence", "morphing icon", "컨테이너 애니메이션", "UI 모션", "트랜지션".

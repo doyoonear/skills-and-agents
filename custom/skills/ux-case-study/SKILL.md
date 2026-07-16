@@ -1,5 +1,6 @@
 ---
 name: ux-case-study
+disable-model-invocation: true
 description: |
   Devouring Details 시리즈의 특정 장(章)을 읽고, 그 장이 표현하는 **상위 주제(meta theme)**에 부합하지만
   본문에는 등장하지 않은 **새로운 패턴 5~7개**를 발굴하여 카드뉴스용 케이스 스터디 문서를 작성하는 스킬.

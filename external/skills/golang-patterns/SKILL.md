@@ -1,5 +1,6 @@
 ---
 name: golang-patterns
+disable-model-invocation: true
 description: Idiomatic Go patterns, best practices, and conventions for building robust, efficient, and maintainable Go applications.
 origin: ECC
 ---
