@@ -965,6 +965,63 @@ queryClient.invalidateQueries({
 
 ---
 
+## 최신 문서 조회: TanStack CLI 사용
+
+> **중요**: TanStack 관련 최신 문서를 참조할 때는 TanStack MCP 서버가 아닌 **TanStack CLI**를 사용합니다.
+
+### 설치
+
+```bash
+# npx로 즉시 사용 (설치 불필요)
+npx @tanstack/cli <command>
+
+# 또는 전역 설치
+pnpm add -g @tanstack/cli
+```
+
+### 문서 조회 명령어
+
+```bash
+# 특정 라이브러리의 문서 페이지 가져오기
+npx @tanstack/cli doc <library> <path>
+
+# 예시: TanStack Query의 개요 문서
+npx @tanstack/cli doc query framework/react/overview
+
+# 예시: TanStack Router의 데이터 로딩 가이드
+npx @tanstack/cli doc router framework/react/guide/data-loading
+```
+
+### 문서 검색
+
+```bash
+# 키워드로 문서 검색
+npx @tanstack/cli search-docs "<query>"
+
+# 특정 라이브러리로 범위 제한
+npx @tanstack/cli search-docs "query key factory" --library query
+
+# 예시: server functions 관련 문서 검색
+npx @tanstack/cli search-docs "server functions" --library start
+```
+
+### 라이브러리 목록 확인
+
+```bash
+# 사용 가능한 TanStack 라이브러리 목록
+npx @tanstack/cli libraries
+```
+
+### JSON 출력 (프로그래밍 활용)
+
+모든 명령어에 `--json` 플래그를 추가하면 기계 판독 가능한 JSON 형식으로 출력됩니다.
+
+```bash
+npx @tanstack/cli search-docs "invalidation" --library query --json
+```
+
+---
+
 ## 레퍼런스
 
 ### 공식 문서
@@ -973,6 +1030,9 @@ queryClient.invalidateQueries({
 
 - **[TanStack Query - Query Key Factory](https://tanstack.com/query/v4/docs/framework/react/community/lukemorales-query-key-factory)**
   TanStack 공식 문서의 커뮤니티 라이브러리 섹션
+
+- **[TanStack CLI 공식 문서](https://tanstack.com/cli/latest)**
+  TanStack CLI 설치, 명령어 레퍼런스, 문서 조회 기능
 
 ### 커뮤니티 Best Practices
 - **[React Query: How to organize your keys (DEV Community)](https://dev.to/syeo66/react-query-how-to-organize-your-keys-4mg4)**

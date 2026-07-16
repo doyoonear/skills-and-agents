@@ -1,9 +1,9 @@
 ---
 name: component-architecture
 description: |
-  React 컴포넌트 아키텍처 패턴 가이드. Provider 패턴, 계층 구조, Base/Extended 분리, 재사용 설계.
-  Use when designing component architecture, splitting base and extended components, implementing Provider patterns, or when user mentions "컴포넌트 아키텍처", "컴포넌트 설계", "컴포넌트 계층 구조".
-  Not for component styling (use CSS/Tailwind skills) or state management libraries.
+  React 컴포넌트 아키텍처 패턴 가이드. Provider 패턴, 계층 구조, Base/Extended 분리, 재사용 설계, URL state architecture.
+  Use when designing component architecture, splitting base and extended components, implementing Provider patterns, URL state architecture, search params 상태관리, 라우팅 상태관리, TanStack Router 설계, 어드민 필터 상태관리, or when user mentions "컴포넌트 아키텍처", "컴포넌트 설계", "컴포넌트 계층 구조".
+  Not for component styling (use CSS/Tailwind skills) or library-specific state store implementation.
 ---
 
 # Component Architecture Guide
@@ -17,6 +17,7 @@ React 컴포넌트 설계 시 활용할 수 있는 아키텍처 패턴 모음입
 |------|------|--------------|
 | [기본 + 확장 패턴](#1-기본--확장-패턴) | 기본 컴포넌트를 확장하여 변형 생성 | Modal → ConfirmModal, Sheet → ActionSheet |
 | [Provider + Hook 패턴](#2-provider--hook-패턴) | Context로 상태 관리, Hook으로 접근 | 전역 상태, 모달 시스템, 테마 |
+| [Route URL State Boundary 패턴](#3-route-url-state-boundary-패턴) | URL search params 기반 화면 상태 경계 설계 | 어드민 검색, 필터, 정렬, 페이지네이션 |
 
 > 💡 상세 가이드는 `patterns/` 폴더의 개별 파일을 참조하세요.
 
@@ -185,6 +186,81 @@ export function useOverlay() {
 
 ---
 
+## 3. Route URL State Boundary 패턴
+
+**파일:** `patterns/route-url-state-boundary.md`
+
+### 핵심 개념
+
+```
+Route layer
+├── validateSearch 또는 schema parse로 URL 검증
+├── 기본값, 타입 변환, canonical URL 정규화
+└── loaderDeps 또는 queryKey에 검증된 search 연결
+
+Form layer
+├── URL search 값을 defaultValues로 사용
+├── 입력 중인 draft만 관리
+└── submit 시 URL search params로 변환
+
+Data layer
+├── URL search에서 파생된 queryKey 또는 loaderDeps 사용
+├── 서버 응답은 query cache 또는 loader data로 관리
+└── fetchQuery, ensureQueryData, invalidate, revalidate 역할 구분
+```
+
+### 설계 원칙
+
+| 원칙 | 설명 |
+|------|------|
+| **URL state는 SSOT** | 검색어, 필터, 정렬, 페이지처럼 재현 가능한 화면 조건은 URL search params에 둠 |
+| **Form state는 draft** | submit 전 입력 중인 값은 실제 결과 조건이 아니라 임시 상태로 취급 |
+| **Server state는 파생값** | query cache와 loader data는 URL state에서 파생된 서버 응답으로 취급 |
+| **Route boundary 검증** | URL parsing, validation, defaulting을 leaf 컴포넌트에 흩뿌리지 않음 |
+| **중복 truth 금지** | 같은 값을 URL, form, context, zustand, query cache에 동시에 진실처럼 저장하지 않음 |
+
+### 적용 시나리오
+
+- **어드민 목록 화면**: 검색, 필터, 정렬, 페이지네이션
+- **데이터 테이블**: 공유 가능한 링크와 QA 재현이 필요한 화면
+- **대시보드 뷰**: 탭, 기간, 뷰 모드가 URL로 재현되어야 하는 화면
+- **TanStack Router 화면**: `validateSearch`, `loaderDeps`, `loader`가 데이터 fetching과 연결되는 화면
+
+### 빠른 예시
+
+```tsx
+const usersSearchSchema = z.object({
+    keyword: z.string().default(''),
+    status: z.enum(['all', 'active', 'inactive']).default('all'),
+    page: z.coerce.number().int().min(1).default(1),
+})
+
+export const Route = createFileRoute('/admin/users')({
+    validateSearch: usersSearchSchema,
+    loaderDeps: ({ search }) => ({
+        keyword: search.keyword,
+        status: search.status,
+        page: search.page,
+    }),
+    loader: ({ deps, context }) => context.queryClient.fetchQuery(usersQueryOptions(deps)),
+    component: UsersPage,
+})
+
+function UsersPage() {
+    const search = Route.useSearch()
+    const navigate = Route.useNavigate()
+    const form = useForm({ defaultValues: search })
+
+    const onSubmit = form.handleSubmit((values) => {
+        navigate({ search: (prev) => ({ ...prev, ...values, page: 1 }) })
+    })
+
+    return <UsersSearchForm form={form} onSubmit={onSubmit} />
+}
+```
+
+---
+
 ## 패턴 선택 가이드
 
 ```
@@ -196,8 +272,11 @@ export function useOverlay() {
 2. "여러 컴포넌트에서 공유되는 상태/기능인가?"
    → YES: Provider + Hook 패턴 사용
 
-3. "두 가지 모두 해당하는가?"
-   → 조합 사용 (예: Overlay 시스템)
+3. "검색, 필터, 정렬, 페이지네이션이 URL로 재현되어야 하는가?"
+   → YES: Route URL State Boundary 패턴 사용
+
+4. "두 가지 이상 해당하는가?"
+   → 조합 사용 (예: URL state를 route boundary에 두고, form draft는 Provider + Hook으로 공유)
 ```
 
 ---

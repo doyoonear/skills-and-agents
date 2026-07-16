@@ -1,14 +1,201 @@
 ---
 name: ui-css-patterns
 description: |
-  CSS patterns for UI animation, pseudo-elements, and view transitions. Covers ::before/::after decorative patterns, hit target expansion, button hover effects, native pseudo-element styling, and the View Transitions API.
-  Use when implementing CSS pseudo-elements, hover effects, hit target expansion, view transitions, or styling native elements like ::backdrop, ::placeholder, ::selection, or when user mentions "CSS 패턴", "가상 요소", "hover 효과", "view transition", "뷰 전환".
+  CSS patterns for UI animation, pseudo-elements, adaptive/responsive layout, and view transitions. Covers ::before/::after decorative patterns, hit target expansion, button hover effects, native pseudo-element styling, breakpoint-free CSS refactoring, intrinsic layout, container queries, container units, and the View Transitions API.
+  Use when implementing CSS pseudo-elements, hover effects, hit target expansion, responsive/adaptive CSS, breakpoint refactoring, container queries, intrinsic grid/flex layouts, view transitions, or styling native elements like ::backdrop, ::placeholder, ::selection, or when user mentions "CSS 패턴", "가상 요소", "hover 효과", "반응형", "브레이크포인트", "container query", "view transition", "뷰 전환".
   Not for JavaScript-driven animations (use ui-motion-guide) or sound design (use ui-sound-design).
 ---
 
 # UI CSS Patterns
 
-CSS patterns for pseudo-elements, animations, and transitions in mobile/desktop app development.
+CSS patterns for pseudo-elements, adaptive layouts, animations, and transitions in mobile/desktop app development.
+
+## Adaptive CSS without Breakpoints
+
+### Rule: `container-first-responsive`
+
+Do not default to viewport breakpoints for component layout. First ask whether the UI should respond to the **space available to the component**, not the whole page.
+
+Use this decision order for new CSS or CSS refactoring:
+
+1. **Scalar value change**: font size, spacing, padding, radius → use `clamp()`, `min()`, `max()`.
+2. **Natural wrapping layout**: cards, products, thumbnails, dashboard widgets → use intrinsic grid/flex patterns such as `auto-fit`, `auto-fill`, and `minmax()`.
+3. **Parent/container-dependent component**: same component appears in sidebar, modal, main content → use container units (`cqi`, `cqb`, `cqmin`, `cqmax`) or `@container`.
+4. **Device capability or user preference**: hover support, pointer type, reduced motion, dark mode, contrast, reduced data → use `@media`.
+5. **Page-level major layout switch**: keep viewport breakpoints if the whole page shell truly changes.
+
+**Fail: viewport breakpoints as the default layout engine**
+
+```css
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+```
+
+**Pass: intrinsic layout declares constraints**
+
+```css
+.card-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+}
+```
+
+### Rule: `fluid-scalars-over-breakpoint-steps`
+
+Use fluid values for continuously scalable properties instead of stepwise breakpoint overrides.
+
+**Fail:**
+
+```css
+.card {
+  font-size: 20px;
+  padding: 2rem;
+}
+
+@media (max-width: 720px) {
+  .card {
+    font-size: 18px;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .card {
+    font-size: 16px;
+    padding: 1rem;
+  }
+}
+```
+
+**Pass:**
+
+```css
+.card {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  padding: clamp(1rem, 4vw, 2rem);
+}
+```
+
+Prefer tokenized fluid values in design systems:
+
+```css
+:root {
+  --space-card: clamp(1rem, 4vw, 2rem);
+  --text-card-title: clamp(1rem, 2vw, 1.25rem);
+}
+```
+
+### Rule: `container-units-for-reusable-components`
+
+When a component is reused across differently sized parents, use container units rather than viewport units.
+
+```css
+.card-container {
+  container-type: inline-size;
+}
+
+.card {
+  font-size: clamp(1rem, 5cqi, 1.25rem);
+  padding: clamp(1rem, 6cqi, 2rem);
+  border-radius: clamp(0.25rem, 6cqi, 2rem);
+}
+```
+
+Container units quick reference:
+
+| Unit | Meaning |
+|------|---------|
+| `cqi` | 1% of container inline size |
+| `cqb` | 1% of container block size |
+| `cqmin` | 1% of smaller container axis |
+| `cqmax` | 1% of larger container axis |
+
+### Rule: `container-query-for-structure-only`
+
+Use `@container` when the component's internal structure changes. Do not use it for every spacing/font tweak if `clamp()` or container units are enough.
+
+```css
+.media-card {
+  container-type: inline-size;
+}
+
+.media-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@container (min-width: 32rem) {
+  .media-card__body {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .media-card__description {
+    display: block;
+  }
+}
+```
+
+Good use cases:
+
+- Compact sidebar card vs expanded main-content card
+- Modal content that should adapt to modal width
+- Dashboard widgets reused across different grid columns
+- Product cards that reveal supporting details only when space allows
+
+### Rule: `media-query-for-capability-preference`
+
+Prefer media queries for environment and accessibility conditions rather than component layout by default.
+
+```css
+@media (hover: hover) {
+  .link:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (pointer: coarse) {
+  .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated {
+    animation: none;
+    transition: none;
+  }
+}
+```
+
+### Breakpoint Refactoring Checklist
+
+When asked to refactor responsive CSS:
+
+- [ ] Inventory existing `@media` rules and classify each as scalar change, structural change, or environment preference.
+- [ ] Replace scalar breakpoint steps with `clamp()`, `min()`, `max()`, or fluid tokens.
+- [ ] Replace fixed grid column breakpoints with `repeat(auto-fit|auto-fill, minmax(..., 1fr))` where natural wrapping is acceptable.
+- [ ] Add `container-type: inline-size` to reusable component containers that need local responsiveness.
+- [ ] Use `@container` only for internal structure changes.
+- [ ] Keep `@media` for page shell changes, hover/pointer, color scheme, reduced motion, contrast, reduced data, and other device/user preferences.
+- [ ] Verify the same component in main content, sidebar, modal, and narrow mobile widths when applicable.
 
 ## ::before & ::after Pseudo-Elements
 
@@ -480,6 +667,11 @@ function safeViewTransition(callback: () => void) {
 
 | Rule | Summary |
 |------|---------|
+| `container-first-responsive` | Prefer component/container space over viewport breakpoints for component layout |
+| `fluid-scalars-over-breakpoint-steps` | Use `clamp()`, `min()`, `max()` for fluid size/spacing/radius values |
+| `container-units-for-reusable-components` | Use `cqi`, `cqb`, `cqmin`, `cqmax` for reusable component-local sizing |
+| `container-query-for-structure-only` | Use `@container` for internal structure changes, not every scalar tweak |
+| `media-query-for-capability-preference` | Keep `@media` for device capability and user preference conditions |
 | `pseudo-content-required` | `::before`/`::after` need `content` property |
 | `pseudo-over-dom-node` | Use pseudo-elements for decorative content, not extra DOM nodes |
 | `pseudo-position-relative-parent` | Parent needs `position: relative` for absolute pseudo-elements |

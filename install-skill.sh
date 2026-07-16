@@ -17,6 +17,22 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXTERNAL_SKILLS="$SCRIPT_DIR/external/skills"
 AGENTS_SKILLS="$HOME/.agents/skills"
+PI_SKILLS="$HOME/.pi/agent/skills"
+PI_ONLY_SKILLS=" completion-review deep-plan "
+
+is_pi_only_skill() {
+  [[ "$PI_ONLY_SKILLS" == *" $1 "* ]]
+}
+
+contains_item() {
+  local needle="$1"
+  shift
+  local item
+  for item in "$@"; do
+    [ "$item" = "$needle" ] && return 0
+  done
+  return 1
+}
 
 if [ $# -eq 0 ]; then
   echo "Usage: ./install-skill.sh <package> [skills CLI options]"
@@ -28,12 +44,18 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-mkdir -p "$EXTERNAL_SKILLS" "$AGENTS_SKILLS"
+mkdir -p "$EXTERNAL_SKILLS" "$AGENTS_SKILLS" "$PI_SKILLS"
 
-# 1. 설치 전 ~/.agents/skills/ 스냅샷 (symlink 제외, 실제 디렉토리만)
+# 1. 설치 전 ~/.agents/skills/, ~/.pi/agent/skills/ 스냅샷 (symlink 제외, 실제 디렉토리만)
 before_install=()
-for item in "$AGENTS_SKILLS"/*/; do
-  [ -d "$item" ] && [ ! -L "${item%/}" ] && before_install+=("$(basename "${item%/}")")
+for base in "$AGENTS_SKILLS" "$PI_SKILLS"; do
+  for item in "$base"/*/; do
+    [ -d "$item" ] || continue
+    [ ! -L "${item%/}" ] || continue
+    name="$(basename "${item%/}")"
+    is_pi_only_skill "$name" && continue
+    before_install+=("$base/$name")
+  done
 done
 
 # 2. skills CLI로 글로벌 설치 실행
@@ -42,17 +64,18 @@ npx skills add "$@" -g
 
 # 3. 설치 후 새로 추가된 실제 디렉토리 감지
 new_skills=()
-for item in "$AGENTS_SKILLS"/*/; do
-  [ -d "$item" ] || continue
-  name="$(basename "${item%/}")"
-  # symlink이면 스킵 (기존 install.sh로 연결된 것)
-  [ -L "${item%/}" ] && continue
-  # 이전에 없었던 새 디렉토리만
-  found=false
-  for prev in "${before_install[@]}"; do
-    [ "$prev" = "$name" ] && found=true && break
+for base in "$AGENTS_SKILLS" "$PI_SKILLS"; do
+  for item in "$base"/*/; do
+    [ -d "$item" ] || continue
+    name="$(basename "${item%/}")"
+    is_pi_only_skill "$name" && continue
+    # symlink이면 스킵 (기존 install.sh로 연결된 것)
+    [ -L "${item%/}" ] && continue
+    # 이전에 없었던 새 디렉토리만
+    if ! contains_item "$base/$name" "${before_install[@]}" && ! contains_item "$name" "${new_skills[@]}"; then
+      new_skills+=("$name")
+    fi
   done
-  $found || new_skills+=("$name")
 done
 
 if [ ${#new_skills[@]} -eq 0 ]; then
@@ -66,7 +89,20 @@ fi
 echo ""
 echo "📁 Moving skills to external/skills/..."
 for name in "${new_skills[@]}"; do
-  src="$AGENTS_SKILLS/$name"
+  # skills CLI may install into both ~/.agents/skills and ~/.pi/agent/skills.
+  # A안: ~/.agents/skills is the shared source; ~/.pi/agent/skills keeps Pi-only skills only.
+  src=""
+  if [ -d "$PI_SKILLS/$name" ] && [ ! -L "$PI_SKILLS/$name" ]; then
+    src="$PI_SKILLS/$name"
+  elif [ -d "$AGENTS_SKILLS/$name" ] && [ ! -L "$AGENTS_SKILLS/$name" ]; then
+    src="$AGENTS_SKILLS/$name"
+  fi
+
+  if [ -z "$src" ]; then
+    echo "  ⚠️  $name source not found, skipped"
+    continue
+  fi
+
   dest="$EXTERNAL_SKILLS/$name"
 
   if [ -d "$dest" ]; then
@@ -75,6 +111,7 @@ for name in "${new_skills[@]}"; do
   fi
 
   mv "$src" "$dest"
+  rm -rf "$AGENTS_SKILLS/$name" "$PI_SKILLS/$name"
   echo "  ✅ Moved: $name → external/skills/$name"
 done
 

@@ -1,32 +1,32 @@
-# Skills and Agents Repository
+# Skills Repository
 
-Claude Code와 다른 AI 에이전트에서 사용하는 커스텀 스킬과 에이전트를 관리하는 통합 레포지토리입니다.
+Claude Code와 다른 AI 에이전트에서 사용하는 커스텀/외부 스킬만 관리하는 레포지토리입니다.
+
+전역 지침, 설정, extension, agent 정의의 정본은 각 로컬 전역 경로(`~/.pi`, `~/.claude`, `~/.agents`, `~/.codex`)에 둡니다. 해당 파일들은 Obsidian `Areas/AgentOps`의 generated mirror로만 추적합니다.
 
 ## 구조
 
 ```
 skills-and-agents/
 ├── README.md
-├── install.sh              # symlink 동기화 스크립트
+├── install.sh              # skill symlink 동기화 스크립트
 ├── install-skill.sh        # 외부 스킬 설치 래퍼 (skills CLI + 자동 정리)
-├── custom/                 # 직접 작성한 스킬/에이전트
-│   ├── skills/            # 커스텀 스킬 (44개)
-│   └── agents/            # 커스텀 에이전트 (4개)
-├── external/              # 외부에서 가져온 스킬/에이전트
-│   ├── skills/            # 외부 스킬 (47개)
-│   └── agents/            # 외부 에이전트 (0개)
+├── custom/
+│   └── skills/            # 직접 작성한 커스텀 스킬
+├── external/
+│   └── skills/            # 외부에서 가져온 스킬
 └── backup/                # 로컬 백업 (gitignore)
 ```
 
 ## Custom vs External
 
 ### Custom
-- 직접 작성하고 유지보수하는 스킬/에이전트
+- 직접 작성하고 유지보수하는 스킬
 - 프로젝트 특화 로직, 개인 워크플로우 등
 - Git으로 버전 관리 및 공유
 
 ### External
-- 커뮤니티나 외부 소스에서 가져온 스킬/에이전트
+- 커뮤니티나 외부 소스에서 가져온 스킬
 - awesome-claude-skills, openskills 등에서 설치
 - 원본 유지하며 필요시 커스터마이징
 
@@ -38,10 +38,13 @@ cd ~/skills-and-agents
 ./install.sh
 ```
 
-`install.sh`는 다음 위치에 symlink를 생성합니다:
+`install.sh`는 다음 위치에 skill symlink를 생성합니다:
 - `~/.claude/skills/` - Claude Code용 스킬
-- `~/.claude/agents/` - Claude Code용 에이전트
 - `~/.agents/skills/` - 범용 에이전트 스킬 (Cursor, Windsurf 등)
+- `~/.codex/skills/` - Codex용 스킬
+- `~/.pi/agent/skills/` - Pi 전용/중복 skill 정리 대상
+
+`~/.claude/agents/`와 전역 설정/extension은 이 repo에서 관리하지 않습니다.
 
 ## 스킬 추가/변경
 
@@ -111,7 +114,7 @@ cd ~/Desktop/dev_else/_my-projects/skills-and-agents
 **동작 흐름:**
 1. `npx skills add <package> -g` 실행 (글로벌 설치)
 2. `~/.agents/skills/`에 생긴 새 스킬을 `external/skills/`로 자동 이동
-3. `install.sh` 실행하여 symlink 재생성 (`~/.agents/skills/`, `~/.claude/skills/`)
+3. `install.sh` 실행하여 symlink 재생성 (`~/.agents/skills/`, `~/.claude/skills/`, `~/.codex/skills/`)
 
 ### External 스킬 수동 추가
 
@@ -125,14 +128,18 @@ cp -r /path/to/external-skill external/skills/
 ./install.sh
 ```
 
-## 에이전트 관리
+## 에이전트/전역 설정 관리
 
-에이전트는 `custom/agents/` 또는 `external/agents/`에 `.md` 파일로 추가합니다.
+이 repo는 더 이상 agent 정의, 전역 지침, 설정, extension을 관리하지 않습니다.
+
+- agent 정의 정본: 각 도구의 로컬 전역 경로
+- 전역 지침/설정/extension 정본: `~/.pi`, `~/.claude`, `~/.agents`, `~/.codex`
+- 참고 미러: `/Users/doyoonlee/ObsidianVault/Areas/AgentOps/`
+
+전역 지침/설정/extension 원본 파일을 수정한 직후에만 아래 명령으로 Obsidian generated mirror를 갱신합니다. 일반 작업 완료 후마다 실행하는 절차가 아닙니다.
 
 ```bash
-# 커스텀 에이전트 추가
-echo "# My Agent" > custom/agents/my-agent.md
-./install.sh
+/Users/doyoonlee/ObsidianVault/Areas/AgentOps/sync_agentops_mirrors.py
 ```
 
 ## 다른 AI 에이전트 지원
@@ -140,6 +147,7 @@ echo "# My Agent" > custom/agents/my-agent.md
 현재 지원하는 플랫폼:
 - **Claude Code**: `~/.claude/skills/`, `~/.claude/agents/`
 - **범용 에이전트 (Cursor, Windsurf 등)**: `~/.agents/skills/`
+- **Codex CLI**: `~/.codex/skills/`
 
 다른 플랫폼 symlink가 필요하면 `install.sh`를 수정하세요.
 
