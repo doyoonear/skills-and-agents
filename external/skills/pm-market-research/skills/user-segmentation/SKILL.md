@@ -1,5 +1,6 @@
 ---
 name: user-segmentation
+disable-model-invocation: true
 description: "Segment users from feedback data based on behavior, JTBD, and needs. Identifies at least 3 distinct user segments. Use when segmenting a user base, analyzing diverse user feedback, or building a segmentation model."
 ---
 

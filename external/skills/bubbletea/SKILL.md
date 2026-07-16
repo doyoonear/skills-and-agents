@@ -1,5 +1,6 @@
 ---
 name: bubbletea
+disable-model-invocation: true
 description: Build terminal user interfaces with Go and Bubbletea framework. Use for creating TUI apps with the Elm architecture, dual-pane layouts, accordion modes, mouse/keyboard handling, Lipgloss styling, and reusable components. Includes production-ready templates, effects library, and battle-tested layout patterns from real projects.
 license: MIT
 ---

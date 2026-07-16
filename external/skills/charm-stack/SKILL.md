@@ -1,5 +1,6 @@
 ---
 name: charm-stack
+disable-model-invocation: true
 description: Build terminal UIs with Bubbletea, Bubbles, Lipgloss, and Huh. Use when creating TUI applications, interactive forms, styled terminal output, or when user mentions Bubbletea, Bubbles, Lipgloss, Huh, Charm, or TUI development.
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: component-architecture
+disable-model-invocation: true
 description: |
   React 컴포넌트 아키텍처 패턴 가이드. Provider 패턴, 계층 구조, Base/Extended 분리, 재사용 설계, URL state architecture.
   Use when designing component architecture, splitting base and extended components, implementing Provider patterns, URL state architecture, search params 상태관리, 라우팅 상태관리, TanStack Router 설계, 어드민 필터 상태관리, or when user mentions "컴포넌트 아키텍처", "컴포넌트 설계", "컴포넌트 계층 구조".

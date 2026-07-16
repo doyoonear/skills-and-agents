@@ -1,5 +1,6 @@
 ---
 name: product-vision
+disable-model-invocation: true
 description: "Brainstorm an inspiring, achievable, and emotional product vision that motivates teams and aligns stakeholders. Use when defining or refining a product vision, creating a vision statement, or aligning the team around a shared direction."
 ---
 # Product Vision

@@ -1,5 +1,6 @@
 ---
 name: porters-five-forces
+disable-model-invocation: true
 description: "Perform Porter's Five Forces analysis — competitive rivalry, supplier power, buyer power, threat of substitutes, and threat of new entrants. Use when analyzing industry dynamics, assessing competitive forces, or evaluating market attractiveness."
 ---
 # Porter's Five Forces

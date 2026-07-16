@@ -1,5 +1,6 @@
 ---
 name: ui-css-patterns
+disable-model-invocation: true
 description: |
   CSS patterns for UI animation, pseudo-elements, adaptive/responsive layout, and view transitions. Covers ::before/::after decorative patterns, hit target expansion, button hover effects, native pseudo-element styling, breakpoint-free CSS refactoring, intrinsic layout, container queries, container units, and the View Transitions API.
   Use when implementing CSS pseudo-elements, hover effects, hit target expansion, responsive/adaptive CSS, breakpoint refactoring, container queries, intrinsic grid/flex layouts, view transitions, or styling native elements like ::backdrop, ::placeholder, ::selection, or when user mentions "CSS 패턴", "가상 요소", "hover 효과", "반응형", "브레이크포인트", "container query", "view transition", "뷰 전환".

@@ -1,5 +1,6 @@
 ---
 name: agentation-self-driving
+disable-model-invocation: true
 description: Autonomous design critique mode using the Agentation annotation toolbar. Use when the user asks to "critique this page," "add design annotations," "review the UI," "self-driving mode," "auto-annotate," or wants an AI agent to autonomously add design feedback annotations to a web page via the browser. Requires the Agentation toolbar to be installed on the target page and agent-browser skill to be available.
 allowed-tools: Bash(agent-browser:*)
 ---

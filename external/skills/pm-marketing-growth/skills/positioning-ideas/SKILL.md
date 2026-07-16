@@ -1,5 +1,6 @@
 ---
 name: positioning-ideas
+disable-model-invocation: true
 description: "Brainstorm product positioning ideas differentiated from competitors. Identifies top competitors and generates positioning statements with rationale. Use when developing product positioning, differentiating from competitors, or crafting brand positioning strategy."
 ---
 # Positioning Ideas

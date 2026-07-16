@@ -1,5 +1,6 @@
 ---
 name: agentation
+disable-model-invocation: true
 description: Add Agentation visual feedback toolbar to a Next.js project
 ---
 

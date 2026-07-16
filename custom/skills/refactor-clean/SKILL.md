@@ -1,5 +1,6 @@
 ---
 name: refactor-clean
+disable-model-invocation: true
 description: |
   프로젝트에서 미사용 코드를 찾아 정리. Dead code 탐지, 미사용 import/컴포넌트/파일 제거.
   Use when cleaning up unused code, removing dead imports, or finding unused components, or when user mentions "미사용 코드 정리", "죽은 코드", "안 쓰는 코드", "cleanup unused", "remove dead code".

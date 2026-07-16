@@ -1,5 +1,6 @@
 ---
 name: review-resume
+disable-model-invocation: true
 description: "Comprehensive PM resume review and tailoring against 10 best practices including XYZ+S formula, keyword optimization, job-specific tailoring, and structure. Use when reviewing a PM resume, preparing for job applications, or improving resume impact."
 ---
 # Resume Review for Product Managers

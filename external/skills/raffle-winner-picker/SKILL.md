@@ -1,5 +1,6 @@
 ---
 name: raffle-winner-picker
+disable-model-invocation: true
 description: Picks random winners from lists, spreadsheets, or Google Sheets for giveaways, raffles, and contests. Ensures fair, unbiased selection with transparency.
 ---
 
