@@ -68,6 +68,42 @@ Based on the user interview, fill in these components:
 - **compatibility**: Required tools, dependencies (optional, rarely needed)
 - **the rest of the skill :)**
 
+#### YAML frontmatter safety rules
+
+Always write `SKILL.md` frontmatter in YAML-safe form. Skill descriptions often contain colons, quotes, commas, Korean text, or long trigger lists. Plain one-line YAML values are easy to break, so prefer block scalars for `description`.
+
+**Preferred:**
+```yaml
+---
+name: my-skill
+description: >-
+  Use this skill when the user mentions "run this app", "deploy", or "debug: production".
+  It helps the agent perform the workflow safely and verify the result.
+---
+```
+
+**Avoid:**
+```yaml
+---
+name: my-skill
+description: Use this skill: when the user says "run this app", "debug: production", or similar.
+---
+```
+
+Why: unquoted colons such as `Use this skill:` or `debug: production` can be interpreted as nested YAML mappings and cause errors like `Nested mappings are not allowed in compact mappings`.
+
+After writing or editing any `SKILL.md`, validate the frontmatter before reporting completion.
+
+```bash
+ruby /Users/doyoonlee/.agents/skills/skill-creator/scripts/validate-skill-frontmatter.rb path/to/SKILL.md
+```
+
+If the skill has not been installed yet, run the validator from the source skill directory instead:
+
+```bash
+ruby /Users/doyoonlee/Desktop/dev_else/_my-projects/skills-and-agents/custom/skills/skill-creator/scripts/validate-skill-frontmatter.rb path/to/SKILL.md
+```
+
 ### Skill Writing Guide
 
 #### Anatomy of a Skill

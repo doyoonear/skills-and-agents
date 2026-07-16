@@ -4,6 +4,7 @@ description: |
   테스트 주도 개발(TDD) 워크플로우. RED-GREEN-REFACTOR 사이클로 테스트 먼저 작성 후 구현.
   Use when implementing features with TDD approach, or when user mentions "TDD", "테스트 먼저", "테스트 주도 개발", "RED-GREEN-REFACTOR", "/tdd".
   Not for writing tests after implementation (use testing-principles) or E2E tests.
+disable-model-invocation: true
 ---
 
 # TDD Workflow Skill

@@ -1,6 +1,6 @@
 ---
 name: design-system-patterns
-description: Build scalable design systems with design tokens, theming infrastructure, and component architecture patterns. Use when creating design tokens, implementing theme switching, building component libraries, or establishing design system foundations.
+description: Build scalable design systems with design tokens, theming infrastructure, responsive/adaptive layout tokens, and component architecture patterns. Use when creating design tokens, implementing theme switching, building component libraries, establishing design system foundations, or defining breakpoint/container-query responsive rules.
 ---
 
 # Design System Patterns
@@ -44,6 +44,8 @@ Master design system architecture to create consistent, maintainable, and scalab
 - Slot-based composition
 - Headless UI patterns
 - Style props and responsive variants
+- Fluid spacing/type tokens with `clamp()`, `min()`, `max()`
+- Container-first responsive rules with container queries and container units
 
 ### 4. Token Pipeline
 
@@ -136,7 +138,55 @@ const tokens = {
 }
 ```
 
-### Pattern 2: Theme Switching with React
+### Pattern 2: Fluid Responsive Tokens
+
+Prefer fluid tokens for values that should scale continuously, and reserve named breakpoints for page-level shell changes or hard product constraints.
+
+```css
+:root {
+  --space-card: clamp(1rem, 4vw, 2rem);
+  --space-section: clamp(2rem, 8vw, 6rem);
+  --text-body: clamp(1rem, 1.5vw, 1.125rem);
+  --text-heading: clamp(1.75rem, 5vw, 4rem);
+  --radius-card: clamp(0.75rem, 2vw, 1.5rem);
+}
+```
+
+For reusable components, prefer container-relative values over viewport-relative values.
+
+```css
+.component-shell {
+  container-type: inline-size;
+}
+
+.product-card {
+  padding: clamp(1rem, 5cqi, 2rem);
+  border-radius: clamp(0.5rem, 4cqi, 1.5rem);
+}
+```
+
+Use intrinsic layout tokens/patterns for grids instead of hard-coding column counts by viewport breakpoints.
+
+```css
+.product-grid {
+  --grid-min: 18rem;
+  display: grid;
+  gap: var(--space-card);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-min)), 1fr));
+}
+```
+
+Responsive design system rule:
+
+| Need | Default tool |
+|------|--------------|
+| Font/spacing/padding/radius scaling | `clamp()`, `min()`, `max()` |
+| Card/gallery/dashboard wrapping | `auto-fit`, `auto-fill`, `minmax()` |
+| Component adapts to parent size | `container-type`, `cqi`, `@container` |
+| Internal structure changes | `@container` |
+| Page shell or device/user preference | `@media` |
+
+### Pattern 3: Theme Switching with React
 
 ```tsx
 import { createContext, useContext, useEffect, useState } from "react";
@@ -200,7 +250,7 @@ export const useTheme = () => {
 };
 ```
 
-### Pattern 3: Variant System with CVA
+### Pattern 4: Variant System with CVA
 
 ```tsx
 import { cva, type VariantProps } from "class-variance-authority";
@@ -253,7 +303,7 @@ export function Button({ className, variant, size, ...props }: ButtonProps) {
 }
 ```
 
-### Pattern 4: Style Dictionary Configuration
+### Pattern 5: Style Dictionary Configuration
 
 ```javascript
 // style-dictionary.config.js
@@ -318,6 +368,7 @@ module.exports = {
 5. **Test Theme Combinations**: Verify all themes work with all components
 6. **Automate Token Pipeline**: CI/CD for Figma-to-code synchronization
 7. **Provide Migration Paths**: Deprecate tokens gradually with clear alternatives
+8. **Prefer Fluid Tokens Before Breakpoints**: Use `clamp()`, intrinsic layout, and container queries for component responsiveness before adding global breakpoint variants
 
 ## Common Issues
 
@@ -325,6 +376,8 @@ module.exports = {
 - **Inconsistent Naming**: Mixed conventions (camelCase vs kebab-case)
 - **Missing Dark Mode**: Tokens that don't adapt to theme changes
 - **Hardcoded Values**: Using raw values instead of tokens
+- **Breakpoint Sprawl**: Adding `sm/md/lg/xl` variants for every spacing/type tweak instead of fluid tokens
+- **Viewport-Coupled Components**: Reusable cards/modals/widgets sized with `vw` or global breakpoints instead of container units/queries
 - **Circular References**: Tokens referencing each other in loops
 - **Platform Gaps**: Tokens missing for some platforms (web but not mobile)
 

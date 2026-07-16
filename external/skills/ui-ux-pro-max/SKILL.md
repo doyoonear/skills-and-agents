@@ -56,6 +56,11 @@ Reference these guidelines when:
 ### 4. Layout & Responsive (HIGH)
 
 - `viewport-meta` - width=device-width initial-scale=1
+- `container-first-responsive` - Prefer component/container space over global viewport breakpoints for reusable components
+- `intrinsic-grid` - Use `repeat(auto-fit|auto-fill, minmax(..., 1fr))` for cards, galleries, dashboards
+- `fluid-scalars` - Use `clamp()`, `min()`, `max()` for font size, spacing, padding, radius before adding breakpoints
+- `container-query` - Use `@container` only when component internal structure changes by available space
+- `media-query-purpose` - Keep `@media` for page shell changes, hover/pointer, reduced motion, color scheme, contrast, reduced data
 - `readable-font-size` - Minimum 16px body text on mobile
 - `horizontal-scroll` - Ensure content fits viewport width
 - `z-index-management` - Define z-index scale (10, 20, 30, 50)
@@ -335,6 +340,10 @@ These are frequently overlooked issues that make UI look unprofessional:
 
 | Rule | Do | Don't |
 |------|----|----- |
+| **Container-first responsive** | Make reusable components respond to their parent size with container queries/units | Tie component internals to global `md:`/`lg:` breakpoints by default |
+| **Intrinsic grids** | Use `grid-template-columns: repeat(auto-fit, minmax(..., 1fr))` for card grids | Hard-code 1/2/3 columns at arbitrary viewport widths |
+| **Fluid spacing/type** | Use `clamp()` for spacing, padding, typography, radius | Add breakpoints for every small scalar change |
+| **Media query purpose** | Use media queries for page shell, hover/pointer, reduced motion, color scheme | Use media queries as the first tool for component layout |
 | **Floating navbar** | Add `top-4 left-4 right-4` spacing | Stick navbar to `top-0 left-0 right-0` |
 | **Content padding** | Account for fixed navbar height | Let content hide behind fixed elements |
 | **Consistent max-width** | Use same `max-w-6xl` or `max-w-7xl` | Mix different container widths |
@@ -367,7 +376,11 @@ Before delivering UI code, verify these items:
 ### Layout
 - [ ] Floating elements have proper spacing from edges
 - [ ] No content hidden behind fixed navbars
-- [ ] Responsive at 375px, 768px, 1024px, 1440px
+- [ ] Reusable components use container-first responsiveness where appropriate
+- [ ] Card/list/gallery grids use intrinsic wrapping before hard-coded column breakpoints
+- [ ] Scalar values use fluid tokens or `clamp()` before breakpoint steps
+- [ ] Media queries are reserved for page shell changes and environment/user preferences where possible
+- [ ] Responsive at 375px, 768px, 1024px, 1440px, plus component-specific narrow/wide containers
 - [ ] No horizontal scroll on mobile
 
 ### Accessibility

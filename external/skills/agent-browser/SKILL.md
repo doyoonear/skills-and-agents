@@ -1,10 +1,18 @@
 ---
 name: agent-browser
-description: Browser automation CLI for AI agents. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, or automating any browser task. Triggers include requests to "open a website", "fill out a form", "click a button", "take a screenshot", "scrape data from a page", "test this web app", "login to a site", "automate browser actions", or any task requiring programmatic web interaction.
+description: Default browser automation CLI for AI agents. Use for almost all browser tasks unless the user explicitly asks for browser-harness or the user's visible Chrome session/current tab/extensions/local profile are strictly required. Covers navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, local web app checks, scraping, and fallback when fetch_content/web_search cannot retrieve the real page body.
 allowed-tools: Bash(npx agent-browser:*), Bash(agent-browser:*)
 ---
 
 # Browser Automation with agent-browser
+
+## Tool choice policy
+
+Use `agent-browser` as the default for almost all browser automation. This includes web navigation, clicking, forms, screenshots, scraping, UI testing, local web app checks, and browser-based fallback after content extraction fails. This avoids stealing terminal focus while the user is working.
+
+Use `fetch_content` or `web_search` first for static web text extraction. If those tools cannot retrieve the actual page body, fall back to `agent-browser` without asking again.
+
+Do not switch to `browser-harness` just because a page is interactive or requires browser rendering. Use `browser-harness` only when the user explicitly asks for it, or when the user's visible Chrome session/current tab/extensions/local profile are strictly required and `agent-browser` cannot reproduce that state.
 
 ## Core Workflow
 
